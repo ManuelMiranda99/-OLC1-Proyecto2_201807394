@@ -104,3 +104,20 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 "out"                   return 'out'
 "print"                 return 'print'
 "println"               return 'println'
+
+/* ID */
+{id}                    return 'id'
+<<EOF>>                 return 'EOF'
+
+/lex
+/* PRECEDENCE */
+%left 'else'
+%left '||'
+%left '&&'
+%left '==', '!='
+%left '>=', '<=', '>', '<'
+%left '+', '-'
+%left '*', '/'
+%left '^'
+%right '!'
+%left UMENOS
