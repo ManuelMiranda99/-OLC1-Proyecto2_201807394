@@ -28,6 +28,8 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 /* SYMBOLS */
 
 /* ARITMETIC SYMBOLS */
+"++"                    return '++'
+"--"                    return '--'
 "^"                     return '^'
 "*"                     return '*'
 "/"                     return '/'
@@ -51,6 +53,7 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 /* GENERAL SYMBOLS */
 "="                     return '='
 ";"                     return ';'
+":"                     return ':'
 "{"                     return '{'
 "}"                     return '}'
 "("                     return '('
@@ -107,9 +110,11 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 
 /* ID */
 {id}                    return 'id'
+"."                     throw 'Illegal character'
 <<EOF>>                 return 'EOF'
 
 /lex
+
 /* PRECEDENCE */
 %left 'else'
 %left '||'
@@ -120,4 +125,6 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 %left '*', '/'
 %left '^'
 %right '!'
-%left UMENOS
+%left UMINUS
+
+/* SYNTACTIC ANALYSIS */
