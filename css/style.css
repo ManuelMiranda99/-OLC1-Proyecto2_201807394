@@ -1,0 +1,39 @@
+input[type="file"]#mi-file {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+label[for="mi-file"]{
+    color: black;
+    background-color: white;
+    display: inline-block;
+    transition: all .5s;
+    cursor: pointer;
+    width: fit-content;
+}
+
+.dropdown-menu{
+    background-color: grey;
+}
+
+.dropdown-item{
+    background-color: grey;
+    color: white;
+}
+
+.dropdown-item:hover{
+    background-color: grey;
+}
+
+.nav-item:hover{
+    background-color: #282C30;
+}
+
+/*.editorContainer{
+    display: grid;
+    grid-template-rows: 1fr auto;
+}*/
