@@ -17,7 +17,7 @@
 
     <body>        
         <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-            <a class="navbar-brand text-white"><b>PROYECTO 2. <i>ANTENNAE</i></b></a>
+            <a class="navbar-brand text-white" href=""><b>PROYECTO 2. <i>ANTENNAE</i></b></a>
 
             <ul class="nav justify-content-end">
                 <li class="nav-item dropdown">
@@ -114,6 +114,7 @@
             mainEditor.setFontSize("17px");
 
             var exitEditor = ace.edit("exitEditor");
+            exitEditor.setReadOnly(true);
             exitEditor.setTheme("ace/theme/twilight");
             exitEditor.session.setMode("ace/mode/java");
             exitEditor.setFontSize("17px");
