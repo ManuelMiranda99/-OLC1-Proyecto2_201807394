@@ -3,16 +3,6 @@
     <head>
         <title>Proyecto 2</title>        
 
-        <style type="text/css" media="screen">
-            #mainEditor { 
-                position: absolute;
-                top: 0;
-                right: 0;
-                bottom: 0;
-                left: 0;
-            }
-        </style>
-
         <script src="js/ace.js"></script>
         <script src="js/mode-java.js"></script>
         <script src="js/theme-twilight.js"></script>
@@ -26,7 +16,7 @@
     </head>
 
     <body>        
-        <nav class="navbar navbar-expand-lg navbar-dark, bg-dark">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
             <a class="navbar-brand text-white"><b>PROYECTO 2. <i>ANTENNAE</i></b></a>
 
             <ul class="nav justify-content-end">
@@ -57,24 +47,61 @@
             </ul>
         </nav>
 
+        <!--CONTENT-->
         <div class="content">
-            <div class="container-fluid">
-                <!--CODE CONTENT-->
-                <div class="row">
-                    <div class="col-sm-12 col-md-6 col-lg-6 editorContainer">
-                    <div id="mainEditor"></div>
-                    </div>
-
-                    <div class="col-sm-12 col-md-6 col-lg-6">
-                        <div class="tabs" id="tabs">
-
+            <!--CODE-->
+            <div class="row">
+                <!--MAIN CONTENT-->
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="card text-white bg-dark font-weight-bold">
+                        <div class="card-header text-center">
+                            Main Code
                         </div>
+                        <div class="card-body">
+                            <div class="tab-pane fade show active" id="t1">
+                                <div class="list-group Editor" id="mainEditor"></div>
+                            </div>
+                        </div>                        
                     </div>
                 </div>
+                <!--COMPARISON PROJECTS-->
+                <div class="col-sm-12 col-md-12 col-lg-6">
+                    <div class="card text-white bg-warning font-weight-bold">
+                        <div class="card-header text-center">
+                            Probar Copia
+                        </div>
+                        <div class="card-body">
+                            <!--TODO: TABS-->
+                            <ul class="nav nav-tabs" id="tabsS">
+                                
+                            </ul>
+                            <div id="tabContent" class="tab-content">
+                                <!--
+                                    <div class="tab-pane fade show active" id="tab1">
+                                        <div class="list-group" id="tab1">
+                                    </div>
+                                    <button>Comparar</button>
+                                -->
+                            </div>
+                        </div>
+                    </div>                    
+                </div>
+            </div>
+            <!--REPORTS-->
+            <div class="row reports">
+                <div class="col-lg-6 font-weight-bold">
+                    REPORTES
+                </div>
+                <div class="col-lg-2"></div>
+                <div class="col-lg-3">
+                    <button type="button" class="btn btn-secondary descarga">Descargar Reportes</button>
+                </div>
+            </div>
 
-                <!--CONSOLE AND REPORTS CONTENT-->
-                <div class="row">
-                    
+            <!--CONSOLE-->
+            <div class="row">
+                <div class="col">
+                    <div class="list-group exitEditor" id="exitEditor"></div>
                 </div>
             </div>
         </div>        
@@ -85,6 +112,11 @@
             mainEditor.setTheme("ace/theme/twilight");
             mainEditor.session.setMode("ace/mode/java");
             mainEditor.setFontSize("17px");
+
+            var exitEditor = ace.edit("exitEditor");
+            exitEditor.setTheme("ace/theme/twilight");
+            exitEditor.session.setMode("ace/mode/java");
+            exitEditor.setFontSize("17px");
         </script>
     </body>
 </html>

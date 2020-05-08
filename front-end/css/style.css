@@ -1,3 +1,7 @@
+/*body{
+    overflow: hidden;
+}*/
+
 input[type="file"]#mi-file {
     width: 0.1px;
     height: 0.1px;
@@ -33,7 +37,32 @@ label[for="mi-file"]{
     background-color: #282C30;
 }
 
-/*.editorContainer{
-    display: grid;
-    grid-template-rows: 1fr auto;
-}*/
+.Editor { 
+    position: relative;
+    height: 330px;
+}
+
+.exitEditor{
+    margin-top: 10px;
+    position: relative;
+    height: 220px;
+}
+
+.content{
+    margin-top: 10px;
+    width: 100%;
+    overflow: hidden;
+}
+
+.reports{
+    margin-top: 5px;
+    text-align: center;
+}
+
+.descarga{
+    width: 100%;
+}
+
+.card{
+    height: 100%;
+}
