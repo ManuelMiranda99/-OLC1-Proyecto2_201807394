@@ -128,3 +128,10 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 %left UMINUS
 
 /* SYNTACTIC ANALYSIS */
+%start START
+
+%%
+
+// TODO: Start syntactic analysis
+
+START : 
