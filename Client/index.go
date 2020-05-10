@@ -17,6 +17,6 @@ func main() {
 
 	http.HandleFunc("/", index)
 
-	fmt.Printf("Servidor escuchando en: http://localhost:8000/")
+	fmt.Printf("Frontend initialized on port 8000. http://localhost:8000/")
 	http.ListenAndServe(":8000", nil)
 }
