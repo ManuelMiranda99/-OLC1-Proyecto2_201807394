@@ -61,29 +61,23 @@
                     <div class="card  bg-warning font-weight-bold">
                         <div class="card-header text-center">
                             <div class="row">
-                                <div class="col-lg-8 font-weight-bold" style="font-size: 25px;">
+                                <div class="col-lg-6 font-weight-bold" style="font-size: 25px;">
                                     Probar Copia
                                 </div>
                                 <div class="col-lg-2">
                                     <button class="btn" onclick="newTab()" style="font-weight: bold;">Nuevo</button>
                                 </div>
-                                <div class="col-lg-2">
-                                    <span><input type="file" name="mi-file" id="mi-file" accept=".cs"></span>
-                                    <label for="mi-file"  style="vertical-align: sub;"><a href="" class="openFile">Abrir</a></label>
+                                <div class="col-lg-4">
+                                    <label style="margin: 5px;">Abrir</label>
+                                    <span><input type="file" name="mi-file" id="mi-file" accept=".java" onchange="openFile(this.files)"></span>                                    
                                 </div>
                             </div>                                                    
                         </div>
                         <div class="card-body text-center">
-                            <!--TODO: TABS-->
                             <ul class="nav" id="tabsS">
                                 
                             </ul>
-                            <div id="tabContent" class="tab-content">
-                                <!--
-                                    <div class="tab-pane fade show active" id="tab1">
-                                        <div class="list-group Editor" id="tab1">
-                                    </div>                                    
-                                -->                                
+                            <div id="tabContent" class="tab-content">                                        
                             </div>
                             <button class="btn btn-dark" onclick="compareCode()">Comparar</button>
                         </div>

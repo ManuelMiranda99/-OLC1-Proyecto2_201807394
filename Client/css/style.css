@@ -3,14 +3,14 @@
 }*/
 
 input[type="file"]#mi-file {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
+    width: 96px;
+    height: 50px;
+    opacity: 1;
     overflow: hidden;
     position: absolute;
-    z-index: -1;
+    
 }
-
+/*
 label[for="mi-file"]{
     color: black;
     display: inline-block;
@@ -18,7 +18,7 @@ label[for="mi-file"]{
     cursor: pointer;
     width: fit-content;
 }
-
+*/
 .dropdown-menu{
     background-color: grey;
 }
