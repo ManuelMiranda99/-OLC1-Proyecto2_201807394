@@ -37,7 +37,7 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 "+"                     return 'S_PLUS'
 "-"                     return 'S_MINUS'
 
-/* RELACIONAL SYMBOLS */
+/* RELATIONAL SYMBOLS */
 "<"                     return 'S_MINOR'
 ">"                     return 'S_MAJOR'
 "<="                    return 'S_MINOREQUALS'
@@ -114,6 +114,12 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 <<EOF>>                 return 'EOF'
 
 /lex
+
+%{
+    const OPERATION_TYPE            = require("./Instructions/instruction").OPERATIONS;
+    const TYPES                     = require("./Instructions/instruction").TYPES;
+    const APIinstructions           = require("./Instructions/instruction").APIinstructions;
+%}
 
 /* PRECEDENCE */
 %left 'else'
