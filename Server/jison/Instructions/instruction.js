@@ -81,10 +81,24 @@ const APIinstructions = {
         };
     },
 
+    newImportList: function(imports, _import){
+        return{
+            imports: imports,
+            import: _import
+        }
+    },
+
     newImport: function(id){
         return{
             type: INSTRUCTIONS.IMPORT,
             id: id
+        };
+    },
+
+    newClassList: function(classes, _class){
+        return{
+            classes: classes,
+            class: _class
         };
     },
 
@@ -95,6 +109,13 @@ const APIinstructions = {
             instructions: instructions
         };
     },    
+
+    newListInsideClass: function(insides, inside){
+        return{
+            insides: insides,
+            inside: inside
+        };
+    },
 
     newBinaryOP: function(left, right, type){
         return newOp(left, right, type);
@@ -130,11 +151,25 @@ const APIinstructions = {
         };
     },
 
-    params: function(type, id){
+    newParamsList: function(params, param){
+        return{
+            params: params,
+            param: param
+        };
+    },
+
+    newParam: function(type, id){
         return{
             type: INSTRUCTIONS.PARAMS,
             data_type: type,
             id: id
+        };
+    },
+
+    newSententenceList: function(sentences, sentence){
+        return{
+            sentences: sentences,
+            sentence: sentence
         };
     },
 
@@ -262,9 +297,10 @@ const APIinstructions = {
         };
     },
 
-    newReturn: function(){
+    newReturn: function(exp){
         return{
-            type: INSTRUCTIONS.RETURN
+            type: INSTRUCTIONS.RETURN,
+            expression: exp
         };
     }
 

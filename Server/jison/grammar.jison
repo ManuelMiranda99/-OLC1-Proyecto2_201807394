@@ -22,8 +22,8 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 {double}                return 'Double_Number'
 {stringL}               return 'String_Literal'
 {charL}                 return 'Char_Literal'
-"true"                  return 'WR_TRUE'
-"false"                 return 'WR_FALSE'
+"true"                  return 'true'
+"false"                 return 'false'
 
 /* SYMBOLS */
 
@@ -38,12 +38,12 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 "-"                     return 'S_MINUS'
 
 /* RELATIONAL SYMBOLS */
-"<"                     return 'S_MINOR'
-">"                     return 'S_MAJOR'
 "<="                    return 'S_MINOREQUALS'
 ">="                    return 'S_MAJOREQUALS'
 "=="                    return 'S_EQUALSEQUALS'
 "!="                    return 'S_DIFFERENT'
+"<"                     return 'S_MINOR'
+">"                     return 'S_MAJOR'
 
 /* LOGICAL SYMBOLS */
 "||"                    return 'S_OR'
@@ -110,8 +110,8 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 
 /* ID */
 {id}                    return 'id'
-.                       { console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
 <<EOF>>                 return 'EOF'
+.                       { console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
 
 /lex
 
@@ -139,56 +139,76 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 %%
 
 
-START : IMPORTLIST CLASSLIST EOF
+START : IMPORTLIST CLASSLIST EOF    { return APIinstructions.root($1, $2); }
             ;
 
-IMPORTLIST : import id SEMICOLON IMPORTLIST
+IMPORTLIST : IMPORTLIST FINALIMPORT { $$ = APIinstructions.newImportList($1, $2); }
+            | FINALIMPORT           { $$ = APIinstructions.newImportList(undefined, $1); }
             | //Epsilon
             ;
 
-CLASSLIST : class id S_OPEN_KEY INSIDECLASS S_CLOSE_KEY 
-            | //Epsilon
-            ;
-
-INSIDECLASS :     TYPE id FUNCTIONORNOT INSIDECLASS
-                | void MAINORNOT INSIDECLASS
-                | //Epsilon
-            ;
-FUNCTIONORNOT :   S_OPEN_PARENTHESIS PARAMETER S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY
-                | IDLIST OPTASSIGNMENT SEMICOLON
-            ;
-MAINORNOT :   main S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY
-            | id S_OPEN_PARENTHESIS PARAMETER S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY
-            ;
-TYPE : WR_INT | WR_DOUBLE | WR_CHAR | WR_STRING | WR_BOOLEAN
-            ;
-
-PARAMETER : PARAMETERDECLARATION
-            | //Epsilon
-            ;
-PARAMETERDECLARATION :S_EQUALS TYPE id PARAMETERLIST
-            ;
-PARAMETERLIST : S_COMMA PARAMETERDECLARATION
+FINALIMPORT:  import id SEMICOLON   { $$ = APIinstructions.newImport($2); }
             | // Epsilon
             ;
-SENTENCESLIST :  DECLARATIONSENTENCE SENTENCESLIST
-                | ASSIGNMENTORCALLSENTENCE SENTENCESLIST
-                | PRINTSENTENCE SENTENCESLIST
-                | IFELSESENTENCE SENTENCESLIST
-                | SWITCHSENTENCE SENTENCESLIST
-                | FORSENTENCE SENTENCESLIST
-                | WHILESENTENCE SENTENCESLIST
-                | DOWHILESENTENCE SENTENCESLIST
-                | CONTINUESENTENCE SENTENCESLIST
-                | BREAKSENTENCE SENTENCESLIST
-                | RETURNSENTENCE SENTENCESLIST
+
+CLASSLIST :   CLASSLIST  FINALCLASS { $$ = APIinstructions.newClassList($1, $2); }
+            | FINALCLASS            { $$ = APIinstructions.newClassList(undefined, $1); }
+            | //Epsilon
+            ;
+            
+FINALCLASS: class id S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { $$ = APIinstructions.newClass($2, $4); }
+            | // Epsilon
+            ;
+
+INSIDECLASS :     INSIDECLASS FINALINSIDECLASS  { $$ = APIinstructions.newListInsideClass($1, $2); }
+                | INSIDECLASS   { $$ = APIinstructions.newListInsideClass(undefined, $1); }
                 | //Epsilon
             ;
-CONTINUESENTENCE : continue SEMICOLON
+FINALINSIDECLASS :    DECLARATIONSENTENCE { $$ = $1; }
+                    | METHODSFUN   { $$ = $1; }
             ;
-BREAKSENTENCE : break SEMICOLON
+
+METHODSFUN :  TYPE id S_OPEN_PARENTHESIS PARAMETERDECLARATION S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY { $$ = APIinstructions.newFunction($1, $2, $4, $7); }
+            | TYPE id S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY   { $$ = APIinstructions.newFunction($1, $2, undefined, $6) }
+            | void id S_OPEN_PARENTHESIS PARAMETERDECLARATION S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY { $$ = APIinstructions.newMethod($2, $4, $7); }
+            | void id S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY { $$ = APIinstructions.newMethod($2, undefined, $6); }
+            | void main S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY { $$ = APIinstructions.newMethod($2, undefined, $6); }
             ;
-RETURNSENTENCE : return IMPRESSION SEMICOLON
+
+TYPE : WR_INT { $$ = $1; } | WR_DOUBLE { $$ = $1; } | WR_CHAR { $$ = $1; } | WR_STRING { $$ = $1; } | WR_BOOLEAN { $$ = $1; }
+            ;
+
+PARAMETERDECLARATION :    PARAMETERDECLARATION S_COMMA PARAMETER    { $$ = APIinstructions.newParamsList($1, $3); }
+                        | PARAMETER { $$ = APIinstructions.newParamsList(undefined, $1); }
+            ;
+
+PARAMETER : TYPE id { $$ = APIinstructions.newParam($1, $2); }
+            ;
+
+SENTENCESLIST :   SENTENCESLIST SENTENCE    { $$ = APIinstructions.newSentenceList($1, $2); }
+                | SENTENCE  { $$ = APIinstructions.newSentenceList(undefined, $1); }
+                | //Epsilon
+            ;
+
+SENTENCE :    DECLARATIONSENTENCE   { $$ = $1; }
+            | ASSIGNMENTORCALLSENTENCE  { $$ = $1; }
+            | PRINTSENTENCE { $$ = $1; }
+            | IFELSESENTENCE    { $$ = $1; }
+            | SWITCHSENTENCE    { $$ = $1; }
+            | FORSENTENCE   { $$ = $1; }
+            | WHILESENTENCE { $$ = $1; }
+            | DOWHILESENTENCE   { $$ = $1; }
+            | CONTINUESENTENCE  { $$ = $1; }
+            | BREAKSENTENCE { $$ = $1; }
+            | RETURNSENTENCE    { $$ = $1; }
+            ;
+
+CONTINUESENTENCE : continue SEMICOLON   { $$ = APIinstructions.newContinue(); }
+            ;
+BREAKSENTENCE : break SEMICOLON { $$ = APIinstructions.newBreak(); }
+            ;
+RETURNSENTENCE :  return EXPRESSION SEMICOLON   { $$ = APIinstructions.newReturn($2); }
+                | return SEMICOLON  { $$ = APIinstructions.newReturn(undefined); }
             ;
 DECLARATIONSENTENCE : TYPE DECLARATIONVARIABLES
             ;
@@ -207,7 +227,7 @@ OPTAORCALL :  S_EQUALS EXPRESSION
             ;
 
 /* PRINT STATEMENTS */
-PRINTSENTENCE : System S_POINT out PRINTOPT SEMICOLON
+PRINTSENTENCE : System S_POINT out S_POINT PRINTOPT SEMICOLON
             ;
 PRINTOPT :    print S_OPEN_PARENTHESIS IMPRESSION S_CLOSE_PARENTHESIS
             | println S_OPEN_PARENTHESIS IMPRESSION S_CLOSE_PARENTHESIS
@@ -271,6 +291,8 @@ EXPRESSION :  S_MINUS EXPRESSION %prec UMINUS
             | EXPRESSION S_OR EXPRESSION
             | EXPRESSION S_AND EXPRESSION
             | S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS
+            | id S_OPEN_PARENTHESIS EXPRESISONLIST, S_CLOSE_PARENTHESIS
+            | id S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS
             | id
             | Integer_Number
             | Double_Number
@@ -278,4 +300,8 @@ EXPRESSION :  S_MINUS EXPRESSION %prec UMINUS
             | Char_Literal
             | true
             | false
+            ;
+
+EXPRESISONLIST :  EXPRESISONLIST S_COMMA EXPRESSION
+                | EXPRESSION
             ;
