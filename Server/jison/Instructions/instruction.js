@@ -173,6 +173,13 @@ const APIinstructions = {
         };
     },
 
+    newListIDs: function(ids, id){
+        return{
+            ids: ids,
+            id: id
+        };
+    },
+
     newDeclaration: function(type, ids){
         return{
             type: INSTRUCTIONS.DECLARATION,
@@ -206,8 +213,6 @@ const APIinstructions = {
         };
     },
 
-
-
     newPrint: function(exp){
         return{
             type: INSTRUCTIONS.PRINT,
@@ -215,11 +220,19 @@ const APIinstructions = {
         };
     },
 
-    newIf: function(exp, instructions){
+    newIf: function(exp, instructions, elseif, _else){
         return{
             type: INSTRUCTIONS.IF,
             condition: exp,
-            instructions: instructions
+            instructions: instructions,
+            elseif: elseif,
+            else: _else
+        };
+    },
+
+    newElseIf: function(_if){
+        return{
+            if: _if
         };
     },
 
@@ -230,18 +243,20 @@ const APIinstructions = {
         };
     },
 
-    newSwitch: function(exp, cases){
+    newSwitch: function(exp, cases, _default){
         return{
             type: INSTRUCTIONS.SWITCH,
             expression: exp,
-            cases: cases
+            cases: cases,
+            default: _default
         };
     },
 
-    newListCases: function(c){
-        let cases = [];
-        cases.push(c);
-        return cases;
+    newListCases: function(cases, _case){
+        return{
+            cases: cases,
+            case: _case
+        };
     },
 
     newCase: function(exp, instructions){
@@ -256,6 +271,21 @@ const APIinstructions = {
         return{
             type: OPT_SWITCH.DEFAULT,
             instructions: instructions
+        };
+    },
+
+    newDeclarationFor: function(type, id, exp){
+        return{
+            type: type,
+            id: id,
+            expression: exp
+        };
+    },
+
+    newNextFor: function(exp, incdec){
+        return{
+            expression: exp,
+            incdec: incdec
         };
     },
 
@@ -300,6 +330,13 @@ const APIinstructions = {
     newReturn: function(exp){
         return{
             type: INSTRUCTIONS.RETURN,
+            expression: exp
+        };
+    },
+
+    newListExpression: function(expressions, exp){
+        return{
+            expressions: expressions,
             expression: exp
         };
     }
