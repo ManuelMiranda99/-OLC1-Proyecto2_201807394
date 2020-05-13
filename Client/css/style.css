@@ -1,6 +1,6 @@
-/*body{
-    overflow: hidden;
-}*/
+body{
+    background-color: grey;
+}
 
 input[type="file"]#mi-file {
     width: 96px;
