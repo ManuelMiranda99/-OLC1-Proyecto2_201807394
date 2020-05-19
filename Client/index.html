@@ -22,20 +22,15 @@
 
             <ul class="nav justify-content-end">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Archivo</a>      
+                    <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Archivo</a>
 
                     <div class="dropdown-menu">                                                                    
-                        <a href="#" class="dropdown-item">Guardar</a>
+                        <a href="#" class="dropdown-item" onclick="Save()">Guardar</a>
 
-                        <a href="#" class="dropdown-item">Guardar Como</a>
+                        <a href="#" class="dropdown-item" onclick="SaveAs()">Guardar Como</a>
                     </div>
 
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="" aria-haspopup="true">
-                        Descargar Errores
-                    </a>
-                </li>                
+                </li>             
             </ul>
         </nav>
 
@@ -74,7 +69,7 @@
                                     Probar Copia
                                 </div>
                                 <div class="col-lg-2">
-                                    <button class="btn" onclick="newTab()" style="font-weight: bold;">Nuevo</button>
+                                    <button class="btn" onclick="newTab('Tab')" style="font-weight: bold;">Nuevo</button>
                                 </div>
                                 <div class="col-lg-4">
                                     <label style="margin: 5px;">Abrir</label>
@@ -107,7 +102,7 @@
             <!--CONSOLE-->
             <div class="row">
                 <div class="col">
-                    <div class="list-group exitEditor" id="exitEditor"></div>
+                    <div class="list-group exitEditor" id="exitEditor">/* AQUI SE MOSTRARÁ EL REPORTE DE COPIA */</div>
                 </div>
             </div>
         </div>        

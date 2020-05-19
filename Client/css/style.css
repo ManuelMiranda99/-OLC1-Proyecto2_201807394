@@ -41,6 +41,12 @@ label[for="mi-file"]{
     height: 330px;
 }
 
+.jsonEditor{
+    position: relative;
+    height: 630px;
+    width: 100%;
+}
+
 .CopyEditor{
     position: relative;
     height: 250px;
