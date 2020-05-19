@@ -1,4 +1,4 @@
-
+// INFO: AST only for the main code
 var countOfTabs = 0;
 var copyEditorList = new Array();
 var actualEditor;
@@ -43,6 +43,16 @@ function openFile(files){
     reader.onload = function(e){
         newTab();
         actualEditor.setValue(e.target.result);
+    };
+    reader.readAsText(file);
+    file.clear;
+}
+
+function openMainFile(files){
+    var file = files[0];
+    var reader = new FileReader();
+    reader.onload = function(e){
+        mainEditor.setValue(e.target.result);
     };
     reader.readAsText(file);
     file.clear;

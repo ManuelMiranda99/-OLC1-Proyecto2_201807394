@@ -47,7 +47,16 @@
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="card text-white bg-dark font-weight-bold">
                         <div class="card-header text-center">
-                            Main Code
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    Main Code
+                                </div>
+
+                                <div class="colr-lg-4">
+                                    <label style="margin: 5px;">Abrir</label>
+                                    <span><input type="file" name="mi-file" id="mi-file" accept=".java" onchange="openMainFile(this.files)"></span>
+                                </div>
+                            </div>                            
                         </div>
                         <div class="card-body">
                             <div class="tab-pane fade show active" id="t1">
@@ -69,7 +78,7 @@
                                 </div>
                                 <div class="col-lg-4">
                                     <label style="margin: 5px;">Abrir</label>
-                                    <span><input type="file" name="mi-file" id="mi-file" accept=".java" onchange="openFile(this.files)"></span>                                    
+                                    <span><input type="file" name="mi-file" id="mi-file" accept=".java" onchange="openFile(this.files)"></span>
                                 </div>
                             </div>                                                    
                         </div>
