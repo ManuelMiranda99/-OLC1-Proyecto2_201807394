@@ -10,7 +10,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous"></script>
     </head>
 
-<body>
+<body onload="GetAST()">
     
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <a class="navbar-brand text-white" href="/"><b>PROYECTO 2. <i>ANTENNAE</i></b></a>
@@ -20,7 +20,7 @@
     
     <div class="container">
         <div class="row">
-            <div class="col">
+            <div class="col-lg-3 col-sm-12">
                 <div class="list-group">
                     <button class="list-group-item list-group-item-action list-group-item-dark" onclick="DownloadErrors()">Descargar Errores</button>
                     <br>
@@ -31,7 +31,7 @@
                     <button class="list-group-item list-group-item-action list-group-item-dark" onclick="DownloadVariables()">Variables Copia</button>
                 </div>
             </div>
-            <div class="col">
+            <div class="col-lg-9 col-sm-12">
                 <div class="row">                    
                     <button class="list-group-item list-group-item-action list-group-item-dark" onclick="DownloadAST()">AST del Código Principal</button>
                 </div>
@@ -47,6 +47,7 @@
     <script>
         var jsonEditor = ace.edit("jsonEditor");
         jsonEditor.setReadOnly(true);
+        jsonEditor.session.setUseSoftTabs(true);
         jsonEditor.setTheme("ace/theme/twilight");
         jsonEditor.session.setMode("ace/mode/json");
         jsonEditor.setFontSize("17px");

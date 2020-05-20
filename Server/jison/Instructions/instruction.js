@@ -10,30 +10,30 @@ const TYPES = {
 const OPERATIONS = {
     
     /* ARITMETIC SYMBOLS */
-    NEGATE              :           "NEGATIVE",                 // - x
+    NEGATE              :           "-",                 // - x
     
-    ADDITION            :           "ADDITION",                 // x + y
-    SUBTRACTION         :           "SUBTRACTION",              // x - y
-    MULTIPLICATION      :           "MULTIPLICATION",           // x * y
-    DIVISION            :           "DIVISION",                 // x / y
-    MODULE              :           "MODULE",                   // x % y
-    POTENCY             :           "POTENCY",                  // x ^ y
+    ADDITION            :           "+",                 // x + y
+    SUBTRACTION         :           "-",              // x - y
+    MULTIPLICATION      :           "*",           // x * y
+    DIVISION            :           "/",                 // x / y
+    MODULE              :           "%",                   // x % y
+    POTENCY             :           "^",                  // x ^ y
 
-    INCREMENT           :           "INCREMENT",                // x++
-    DECREMENT           :           "DECREMENT",                // x--
+    INCREMENT           :           "++",                // x++
+    DECREMENT           :           "--",                // x--
 
     /* RELATIONAL SYMBOLS */    
-    MAJOR_THAN          :           "MAJOR_THAN",               // x > y
-    LESS_THAN           :           "LESS_THAN",                // x < y
-    MAJOR_EQUALS_THAN   :           "MAJOR_EQUALS_THAN",        // x >= y
-    LESS_EQUALS_THAN    :           "LESS_EQUALS_THAN",         // x <= y
-    EQUALS_EQUALS       :           "EQUALS_EQUALS",            // x == y
-    DIFFERENT           :           "DIFFERENT",                // x != y
+    MAJOR_THAN          :           ">",               // x > y
+    LESS_THAN           :           "<",                // x < y
+    MAJOR_EQUALS_THAN   :           ">=",        // x >= y
+    LESS_EQUALS_THAN    :           "<=",         // x <= y
+    EQUALS_EQUALS       :           "==",            // x == y
+    DIFFERENT           :           "!=",                // x != y
 
     /* LOGICAL SYMBOLS */
-    OR                  :           "OR",                       // x || y
-    AND                 :           "AND",                      // x && y
-    NOT                 :           "NOT"                      // !x
+    OR                  :           "||",                       // x || y
+    AND                 :           "&&",                      // x && y
+    NOT                 :           "!"                      // !x
 }
 
 const INSTRUCTIONS = {
@@ -65,9 +65,9 @@ const OPT_SWITCH = {
 
 function newOp(left, right, type){
     return{
-        left: left,
-		right: right,
-		type: type
+        IZQ: left,
+        OP: type,
+		DER: right		
     };
 }
 
@@ -76,44 +76,47 @@ const APIinstructions = {
     /* ROOT */
     root : function(listOfImports, listOfClases){
         return {
-            listOfImports: listOfImports,
-            listOfClases: listOfClases
+            LISTA_IMPORTS: listOfImports,
+            LISTA_CLASES: listOfClases
         };
     },
 
     newImportList: function(imports, _import){
         return{
-            imports: imports,
-            import: _import
+            IMPORT: _import,
+            IMPORTS: imports            
         }
     },
 
     newImport: function(id){
         return{
-            type: INSTRUCTIONS.IMPORT,
-            id: id
+            IMPORT: 'import',
+            ID: id,
+            PC: ';'
         };
     },
 
     newClassList: function(classes, _class){
         return{
-            classes: classes,
-            class: _class
+            CLASE: _class,
+            CLASES: classes            
         };
     },
 
     newClass: function(id, instructions){
         return {
-            type: INSTRUCTIONS.CLASS,
-            id: id,
-            instructions: instructions
+            CLASS: 'class',
+            ID: id,
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}'
         };
     },    
 
     newListInsideClass: function(insides, inside){
         return{
-            insides: insides,
-            inside: inside
+            SENTENCIA: inside,
+            SENTENCIAS: insides            
         };
     },
 
@@ -122,222 +125,273 @@ const APIinstructions = {
     },
 
     newUnaryOP : function(operand, type){
-        return newOp(operand, undefined, type);
+        return newOp(undefined, operand, type);
     },
 
     newValue: function(value, type){
         return{
-            type: type,
-            value: value
+            TIPO: type,
+            VALOR: value
         };
     },
 
     newMethod: function(id, params, instructions){
         return{
-            type: INSTRUCTIONS.METHOD,
-            id: id,
-            params: params,
-            instructions: instructions
+            TIPO: 'void',            
+            ID: id,
+            O_P: '(',
+            PARAMETROS: params,
+            C_P: ')',
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}'
         };
     },
 
     newFunction: function(type, id, params, instructions){
-        return{
-            type: INSTRUCTIONS.FUNCTION,
-            function_type: type,
-            id: id,
-            params: params,
-            instructions: instructions
+        return{            
+            TIPO: type,
+            ID: id,
+            O_P: '(',
+            PARAMETROS: params,
+            C_P: ')',
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}'
         };
     },
 
     newParamsList: function(params, param){
+        if(params == undefined){
+            return{
+                PARAMETRO: param
+            }
+        }
         return{
-            params: params,
-            param: param
+            PARAMETRO: param,
+            C: ',',
+            PARAMETROS: params                        
         };
     },
 
     newParam: function(type, id){
         return{
-            type: INSTRUCTIONS.PARAMS,
-            data_type: type,
-            id: id
+            TIPO_DATO: type,
+            ID: id
         };
     },
 
     newSententenceList: function(sentences, sentence){
         return{
-            sentences: sentences,
-            sentence: sentence
+            SENTENCIA: sentence,
+            SENTENCIAS: sentences
         };
     },
 
     newListIDs: function(ids, id){
         return{
-            ids: ids,
-            id: id
+            ID: id,
+            C: ',',
+            IDS: ids            
         };
     },
 
     newDeclaration: function(type, ids){
         return{
-            type: INSTRUCTIONS.DECLARATION,
-            data_type: type,
-            ids: ids
+            TIPO_DATO: type,
+            IDS: ids,
+            PC: ';'
         }
     },
 
     newDecAs: function(type, ids, exp){
-        return{
-            type: INSTRUCTIONS.DECLARATION,
-            data_type: type,
-            ids: ids,
-            expression: exp
+        return{            
+            TIPO_DATO: type,
+            IDS: ids,
+            I: '=',
+            EXPRESSION: exp,
+            PC: ';'
         };
     },
 
     newAssignation: function(id, exp){
-        return{
-            type: INSTRUCTIONS.ASSIGNMENT,
-            id: id,
-            expression: exp
+        return{            
+            ID: id,
+            I: '=',
+            EXPRESSION: exp,
+            PC: ';'
         };
     },
 
     newCallFun: function(id, params){
-        return{
-            type: INSTRUCTIONS.CALL_FUNCTION,
-            id: id,
-            params: params
+        return{            
+            ID: id,
+            O_P: '(',
+            PARAMETROS: params,
+            C_P: ')',
+            PC: ';'
         };
     },
 
-    newPrint: function(exp){
+    newPrint: function(print, exp){
         return{
-            type: INSTRUCTIONS.PRINT,
-            expression: exp
+            PRINT: print,
+            O_P: '(',
+            EXPRESSION: exp,
+            C_P: ')',
+            PC: ';'
         };
     },
 
     newIf: function(exp, instructions, elseif, _else){
         return{
-            type: INSTRUCTIONS.IF,
-            condition: exp,
-            instructions: instructions,
-            elseif: elseif,
-            else: _else
+            TIPO: INSTRUCTIONS.IF,
+            O_P : '(',   
+            CONDICION: exp,
+            C_P: ')',
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}',
+            ELSEIF: elseif,
+            ELSE: _else
         };
     },
 
     newElseIf: function(_if){
         return{
-            if: _if
+            IF: _if
         };
     },
 
     newElse: function(instructions){
         return{
-            type: INSTRUCTIONS.ELSE,
-            instructions: instructions
+            ELSE: 'else',
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}'
         };
     },
 
     newSwitch: function(exp, cases, _default){
         return{
-            type: INSTRUCTIONS.SWITCH,
-            expression: exp,
-            cases: cases,
-            default: _default
+            SWITCH: 'switch',
+            O_P: '(',
+            EXPRESSION: exp,
+            C_P: ')',
+            O_K: '{',
+            CASOS: cases,
+            DEFAULT: _default,
+            C_K: '}'
         };
     },
 
     newListCases: function(cases, _case){
         return{
-            cases: cases,
-            case: _case
+            CASO: _case,
+            CASOS: cases            
         };
     },
 
     newCase: function(exp, instructions){
         return{
-            type: OPT_SWITCH.CASE,
-            expression: exp,
-            instructions: instructions
+            CASE: 'case',
+            EXPRESSION: exp,
+            DP: ':',
+            INSTRUCCIONES: instructions
         };
     },
 
     newDefault: function(instructions){
         return{
-            type: OPT_SWITCH.DEFAULT,
-            instructions: instructions
+            DEFAULT: 'default',
+            DP: ':',
+            INSTRUCCIONES: instructions
         };
     },
 
     newDeclarationFor: function(type, id, exp){
         return{
-            type: type,
-            id: id,
-            expression: exp
+            TIPO_DATO: type,
+            ID: id,
+            I: '=',
+            EXPRESSION: exp            
         };
     },
 
     newNextFor: function(exp, incdec){
         return{
-            expression: exp,
-            incdec: incdec
+            EXPRESSION: exp,
+            INDODEC: incdec            
         };
     },
 
     newFor: function(variables, exp, next, instructions){
         return{
-            type: INSTRUCTIONS.FOR,
-            variables: variables,
-            condition: exp,
-            next: next,
-            instructions: instructions
+            FOR: 'for',
+            O_P: '(',
+            ASIGNACION: variables,
+            PC: ';',
+            CONDICION: exp,
+            PC: ';',
+            SIGUIENTE: next,
+            C_P: ')',
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}'            
         };
     },
 
     newWhile: function(condition, instructions){
         return{
-            type: INSTRUCTIONS.WHILE,
-            condition: condition,
-            instructions: instructions
+            WHILE: 'while',
+            O_P: '(',            
+            CONDICION: condition,
+            C_P: ')',
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}'
         };
     },
 
     newDoWhile: function(condition, instructions){
         return{
-            type: INSTRUCTIONS.DO_WHILE,
-            condition: condition,
-            instructions: instructions
+            DO: 'do',
+            O_K: '{',
+            INSTRUCCIONES: instructions,
+            C_K: '}',
+            WHILE: 'while',
+            O_P: '(',
+            CONDICION: condition,            
+            C_P: ')',
+            PC: ';'
         };
     },
 
     newContinue: function(){
         return{
-            type: INSTRUCTIONS.CONTINUE
+            CONTINUE: 'continue;'
         };
     },
 
     newBreak: function(){
         return{
-            type: INSTRUCTIONS.BREAK
+            BREAK: 'break;'
         };
     },
 
     newReturn: function(exp){
         return{
-            type: INSTRUCTIONS.RETURN,
-            expression: exp
+            RETURN: 'return',
+            EXPRESSION: exp,
+            PC: ';'
         };
     },
 
     newListExpression: function(expressions, exp){
         return{
-            expressions: expressions,
-            expression: exp
+            EXPRESSION: exp,
+            C: ',',
+            EXPRESSIONES: expressions
         };
     }
 

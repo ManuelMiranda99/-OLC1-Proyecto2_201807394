@@ -70,43 +70,82 @@ function openMainFile(files){
 let ASTMAIN, ASTCOPY;
 function compareCode(){    
 
+    document.getElementById("ReportsButton").disabled = false;
+
     // Parse Files
     URL = 'http://localhost:3000/parse';
     var mainText = {
         main: mainEditor.getValue()
     };
     if(copyEditorList.length == 0){
-        AssignAST(ASTMAIN, mainText);
+        /* ASSIGN MAIN AST */
+        fetch(URL, {
+            method: "POST",
+            body: JSON.stringify(mainText),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json())
+        .catch(error => console.error("Error: ", error))
+        .then(response => {
+            console.log("Exito");
+            ASTMAIN = response;    
+        })
+        
         alert("No hay con que comparar el código principal :(. Solo se realizará análisis del código Main");
     }else{        
         var compareText = {
             main: actualEditor.getValue()
         };
-        AssignAST(ASTMAIN, mainText);
-        AssignAST(ASTCOPY, compareText);
+        
+        /* ASSIGN MAIN AST */
+        fetch(URL, {
+            method: "POST",
+            body: JSON.stringify(mainText),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(res => res.json())
+        .catch(error => console.error("Error: ", error))
+        .then(response => {
+            console.log("Exito");
+            ASTMAIN = response;    
+        })        
+        
+        /* ASSIGN COPY AST */
+            fetch(URL, {
+                method: "POST",
+                body: JSON.stringify(compareText),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(res => res.json())
+            .catch(error => console.error("Error: ", error))
+            .then(response => {
+                console.log("Exito");
+                ASTCOPY = response;    
+            })        
     }
 }
 
-function AssignAST(_AST, text){
-    fetch(URL, {
-        method: "POST",
-        body: JSON.stringify(text),
-        headers: {
-            'Content-Type': 'application/json'
-        }
-    }).then(res => res.json())
-    .catch(error => console.error("Error: ", error))
-    .then(response => {
-        console.log("Exito");
-        _AST = response;    
-    })
+function PassAST(){
+    window.location.href = "http://localhost:8000/reports"
+    localStorage.setItem("AST", JSON.stringify(ASTMAIN, null, ' '));
 }
 
+function GetAST(){
+    ASTMAIN = localStorage.getItem("AST");
+    if(ASTMAIN === "undefined"){
+        jsonEditor.setValue("No ha cargado ningun archivo para generar el AST :c");
+    }else{
+    jsonEditor.setValue(ASTMAIN); 
+    }
+}    
+
+    
 function Save(){
     let text = mainEditor.getValue();
-    if(text === ''){
-
-    }else{
+    if(text != ''){
         if(nameOfMainFile === ''){
             nameOfMainFile = 'Main.java';
         }
@@ -117,6 +156,10 @@ function Save(){
         text = actualEditor.getValue();
         saveFile(text, actualName);
     }
+}
+
+function SaveAs(){
+
 }
 
 function DownloadErrors(){
@@ -135,12 +178,12 @@ function DownloadVariables(){
 
 }
 
-function DownloadAST(){
+function DownloadAST(){    
     let text = jsonEditor.getValue();
     saveFile(text, "AST.json");
 }
 
-function saveFile(text, name){
+function saveFile(text, name){  
     let txtFileBlob = new Blob([text], {type: 'text/plain'});
     
     let downloadLink = document.createElement("a");

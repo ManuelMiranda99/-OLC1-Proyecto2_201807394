@@ -145,14 +145,14 @@ START :   IMPORTLIST CLASSLIST EOF      { return APIinstructions.root($1, $2); }
         | EOF
             ;
 
-IMPORTLIST : IMPORTLIST FINALIMPORT { $$ = APIinstructions.newImportList($1, $2); }
+IMPORTLIST :  FINALIMPORT IMPORTLIST { $$ = APIinstructions.newImportList($2, $1); }
             | FINALIMPORT           { $$ = APIinstructions.newImportList(undefined, $1); }
             ;
 
 FINALIMPORT:  import id SEMICOLON   { $$ = APIinstructions.newImport($2); }
             ;
 
-CLASSLIST :   CLASSLIST  FINALCLASS { $$ = APIinstructions.newClassList($1, $2); }
+CLASSLIST :   FINALCLASS CLASSLIST  { $$ = APIinstructions.newClassList($2, $1); }
             | FINALCLASS            { $$ = APIinstructions.newClassList(undefined, $1); }
             ;
             
@@ -160,7 +160,7 @@ FINALCLASS:   class id S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { $$ = APIinstructions
             | class id S_OPEN_KEY S_CLOSE_KEY   { $$ = APIinstructions.newClass($2, undefined); }
             ;
 
-INSIDECLASS :     INSIDECLASS FINALINSIDECLASS  { $$ = APIinstructions.newListInsideClass($1, $2); }
+INSIDECLASS :     FINALINSIDECLASS INSIDECLASS  { $$ = APIinstructions.newListInsideClass($2, $1); }
                 | FINALINSIDECLASS   { $$ = APIinstructions.newListInsideClass(undefined, $1); }
             ;
 FINALINSIDECLASS :    DECLARATIONSENTENCE { $$ = $1; }
@@ -177,7 +177,7 @@ METHODSFUN :  TYPE id S_OPEN_PARENTHESIS PARAMETERDECLARATION S_CLOSE_PARENTHESI
 TYPE : WR_INT { $$ = $1; } | WR_DOUBLE { $$ = $1; } | WR_CHAR { $$ = $1; } | WR_STRING { $$ = $1; } | WR_BOOLEAN { $$ = $1; }
             ;
 
-PARAMETERDECLARATION :    PARAMETERDECLARATION S_COMMA PARAMETER    { $$ = APIinstructions.newParamsList($1, $3); }
+PARAMETERDECLARATION :    PARAMETER S_COMMA PARAMETERDECLARATION    { $$ = APIinstructions.newParamsList($3, $1); }
                         | PARAMETER { $$ = APIinstructions.newParamsList(undefined, $1); }
             ;
 
@@ -214,16 +214,16 @@ IDLIST :  IDLIST S_COMMA id { $$ = APIinstructions.newListIDs($1, $3); }
 
 ASSIGNMENTORCALLSENTENCE :    id S_EQUALS EXPRESSION SEMICOLON  { $$ = APIinstructions.newAssignation($1, $3); }
                             | id S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS SEMICOLON   { $$ = APIinstructions.newCallFun($1, undefined); }
-                            | id S_OPEN_PARENTHESIS EXPRESISONLIST S_CLOSE_PARENTHESIS SEMICOLON    { $$ = APIinstructions.newCallFun($1, $3); }
+                            | id S_OPEN_PARENTHESIS EXPRESSIONLIST S_CLOSE_PARENTHESIS SEMICOLON    { $$ = APIinstructions.newCallFun($1, $3); }
             ;
 
 /* PRINT STATEMENTS */
 PRINTSENTENCE : System S_POINT out S_POINT PRINTOPT SEMICOLON   { $$ = $5; }
             ;
-PRINTOPT :    print S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS   { $$ = APIinstructions.newPrint($3); }
-            | print S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS   { $$ = APIinstructions.newPrint(undefined); }
-            | println S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS { $$ = APIinstructions.newPrint($3); }
-            | println S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS { $$ = APIinstructions.newPrint(undefined); }
+PRINTOPT :    print S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS   { $$ = APIinstructions.newPrint("System.out.print", $3); }
+            | print S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS   { $$ = APIinstructions.newPrint("System.out.print", undefined); }
+            | println S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS { $$ = APIinstructions.newPrint("System.out.println", $3); }
+            | println S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS { $$ = APIinstructions.newPrint("System.out.println", undefined); }
             ;
 
 /* CONDITIONAL STATEMENTS */
@@ -237,7 +237,7 @@ SWITCHSENTENCE :  switch S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS S_OPE
                 | switch S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS S_OPEN_KEY OPTDEFAULT S_CLOSE_KEY    { $$ = APIinstructions.newSwitch($3, undefined, $6); }
                 | switch S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS S_OPEN_KEY S_CLOSE_KEY   { $$ = APIinstructions.newSwitch($3, undefined, undefined); }
             ;
-CASELIST :    CASELIST CASEFINAL    { $$ = APIinstructions.newListCases($1, $2); }
+CASELIST :    CASEFINAL CASELIST    { $$ = APIinstructions.newListCases($2, $1); }
             | CASEFINAL { $$ = APIinstructions.newListCases(undefined, $1); }
             ;
 CASEFINAL : case EXPRESSION S_TWOPOINTS SENTENCESLIST   { $$ = APIinstructions.newCase($2, $4); }
@@ -280,17 +280,17 @@ EXPRESSION :  S_MINUS EXPRESSION %prec UMINUS   { $$ = APIinstructions.newUnaryO
             | EXPRESSION S_OR EXPRESSION    { $$ = APIinstructions.newBinaryOP($1, $3, OPERATION_TYPE.OR) }
             | EXPRESSION S_AND EXPRESSION   { $$ = APIinstructions.newBinaryOP($1, $3, OPERATION_TYPE.AND) }
             | S_OPEN_PARENTHESIS EXPRESSION S_CLOSE_PARENTHESIS { $$ = $2; }
-            | id S_OPEN_PARENTHESIS EXPRESISONLIST S_CLOSE_PARENTHESIS  { $$ = APIinstructions.newCallFun($1, $3); }
+            | id S_OPEN_PARENTHESIS EXPRESSIONLIST S_CLOSE_PARENTHESIS  { $$ = APIinstructions.newCallFun($1, $3); }
             | id S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS { $$ = APIinstructions.newCallFun($1, undefined); }
             | id    { $$ = APIinstructions.newValue($1, TYPES.ID); }
             | Integer_Number    { $$ = APIinstructions.newValue($1, TYPES.INTEGER); }
             | Double_Number { $$ = APIinstructions.newValue($1, TYPES.DOUBLE); }
             | String_Literal    { $$ = APIinstructions.newValue($1, TYPES.STRING); }
-            | Char_Literal  { $$ = APIinstructions.newValue($1, types.CHAR); }
+            | Char_Literal  { $$ = APIinstructions.newValue($1, TYPES.CHAR); }
             | true  { $$ = APIinstructions.newValue($1, TYPES.BOOLEAN); }
             | false { $$ = APIinstructions.newValue($1, TYPES.BOOLEAN); }
             ;
 
-EXPRESISONLIST :  EXPRESISONLIST S_COMMA EXPRESSION { $$ = APIinstructions.newListExpression($1, $3); }
+EXPRESSIONLIST :  EXPRESSION S_COMMA EXPRESSIONLIST { $$ = APIinstructions.newListExpression($3, $1); }
                 | EXPRESSION    { $$ = APIinstructions.newListExpression(undefined, $1); }
             ;

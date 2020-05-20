@@ -22,12 +22,12 @@
 
             <ul class="nav justify-content-end">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Archivo</a>
+                    <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="" role="button" aria-haspopup="true" aria-expanded="false">Archivo</a>
 
                     <div class="dropdown-menu">                                                                    
-                        <a href="#" class="dropdown-item" onclick="Save()">Guardar</a>
+                        <a href="" class="dropdown-item" onclick="Save()">Guardar</a>
 
-                        <a href="#" class="dropdown-item" onclick="SaveAs()">Guardar Como</a>
+                        <a href="" class="dropdown-item" onclick="SaveAs()">Guardar Como</a>
                     </div>
 
                 </li>             
@@ -95,7 +95,7 @@
                 </div>
                 <div class="col-lg-2"></div>
                 <div class="col-lg-3">
-                    <a href="/reports"><button type="button" class="btn btn-dark descarga">Descargar Reportes</button></a>
+                    <button id="ReportsButton" type="button" class="btn btn-dark descarga" onclick="PassAST()" disabled>Descargar Reportes</button>
                 </div>
             </div>
 
