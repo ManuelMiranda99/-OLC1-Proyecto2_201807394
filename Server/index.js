@@ -27,7 +27,7 @@ app.post('/parse', (req, res, next) => {
     var txt = req.body.main;
     var result = parser(txt);
 
-    res.send({AST: result});
+    res.send({AST: result.AST, LE: result.LEXICAL_ERRORS, SE: result.SINTACTICAL_ERRORS});
 });
 
 function parser(txt){

@@ -111,7 +111,7 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 /* ID */
 {id}                    return 'id'
 <<EOF>>                 return 'EOF'
-.                       { console.error('Este es un error léxico: ' + yytext + ', en la linea: ' + yylloc.first_line + ', en la columna: ' + yylloc.first_column); }
+.                       { LexicalErrors.push({ ERROR: "Caracter invalido: " + yytext, LINE: yylloc.first_line, COLUMN : yylloc.first_column }); }
 
 /lex
 
@@ -119,6 +119,8 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
     const OPERATION_TYPE            = require("./Instructions/instruction").OPERATIONS;
     const TYPES                     = require("./Instructions/instruction").TYPES;
     const APIinstructions           = require("./Instructions/instruction").APIinstructions;
+    const LexicalErrors             = new Array();
+    const SintacticalErrors         = new Array();
 %}
 
 /* PRECEDENCE */
@@ -139,10 +141,10 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 %%
 
 
-START :   IMPORTLIST CLASSLIST EOF      { return APIinstructions.root($1, $2); }
-        | IMPORTLIST EOF                { return APIinstructions.root($1, undefined); }
-        | CLASSLIST EOF                 { return APIinstructions.root(undefined, $1); }
-        | EOF
+START :   IMPORTLIST CLASSLIST EOF      { return { AST: APIinstructions.root($1, $2), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined}; }
+        | IMPORTLIST EOF                { return { AST: APIinstructions.root($1, undefined), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined}; }
+        | CLASSLIST EOF                 { return { AST: APIinstructions.root(undefined, $1), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined}; }
+        | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined }; }
             ;
 
 IMPORTLIST :  FINALIMPORT IMPORTLIST { $$ = APIinstructions.newImportList($2, $1); }

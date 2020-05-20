@@ -68,6 +68,7 @@ function openMainFile(files){
 }
 
 let ASTMAIN, ASTCOPY;
+let MainLexicalErrors, MainSintacticalErrors, CopyLexicalErrors, CopySintacticalErrors;
 function compareCode(){    
 
     document.getElementById("ReportsButton").disabled = false;
@@ -89,7 +90,9 @@ function compareCode(){
         .catch(error => console.error("Error: ", error))
         .then(response => {
             console.log("Exito");
-            ASTMAIN = response;    
+            ASTMAIN = response.AST;
+            MainLexicalErrors = response.LE;
+            MainSintacticalErrors = response.SE;
         })
         
         alert("No hay con que comparar el código principal :(. Solo se realizará análisis del código Main");
@@ -109,7 +112,9 @@ function compareCode(){
         .catch(error => console.error("Error: ", error))
         .then(response => {
             console.log("Exito");
-            ASTMAIN = response;    
+            ASTMAIN = response.AST;
+            MainLexicalErrors = response.LE;
+            MainSintacticalErrors = response.SE;
         })        
         
         /* ASSIGN COPY AST */
@@ -123,7 +128,9 @@ function compareCode(){
             .catch(error => console.error("Error: ", error))
             .then(response => {
                 console.log("Exito");
-                ASTCOPY = response;    
+                ASTCOPY = response.AST;
+                CopyLexicalErrors = response.LE;
+                CopySintacticalErrors = response.SE;
             })        
     }
 }
