@@ -67,13 +67,39 @@ function openMainFile(files){
     file.clear;
 }
 
+let ASTMAIN, ASTCOPY;
 function compareCode(){    
-    var mainText = mainEditor.getValue();
+
+    // Parse Files
+    URL = 'http://localhost:3000/parse';
+    var mainText = {
+        main: mainEditor.getValue()
+    };
     if(copyEditorList.length == 0){
-        alert("No hay con que comparar el código principal :(");
-    }else{
-        var compareText = actualEditor.getValue();
+        AssignAST(ASTMAIN, mainText);
+        alert("No hay con que comparar el código principal :(. Solo se realizará análisis del código Main");
+    }else{        
+        var compareText = {
+            main: actualEditor.getValue()
+        };
+        AssignAST(ASTMAIN, mainText);
+        AssignAST(ASTCOPY, compareText);
     }
+}
+
+function AssignAST(_AST, text){
+    fetch(URL, {
+        method: "POST",
+        body: JSON.stringify(text),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json())
+    .catch(error => console.error("Error: ", error))
+    .then(response => {
+        console.log("Exito");
+        _AST = response;    
+    })
 }
 
 function Save(){

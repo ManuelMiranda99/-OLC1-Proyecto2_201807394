@@ -343,6 +343,6 @@ const APIinstructions = {
 
 }
 
-module.export.OPERATIONS = OPERATIONS;
-module.export.TYPES = TYPES;
-module.export.APIinstructions = APIinstructions;
+module.exports.OPERATIONS = OPERATIONS;
+module.exports.TYPES = TYPES;
+module.exports.APIinstructions = APIinstructions;

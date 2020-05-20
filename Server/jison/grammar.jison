@@ -14,8 +14,8 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 \s+         /* skip whitespace */
 
 /* COMMENTS */
-"//".*
-[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/]
+"//".*  return
+[/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] return
 
 /* NATIVE VALUES */
 {integer}               return 'Integer_Number'
@@ -184,22 +184,19 @@ PARAMETERDECLARATION :    PARAMETERDECLARATION S_COMMA PARAMETER    { $$ = APIin
 PARAMETER : TYPE id { $$ = APIinstructions.newParam($1, $2); }
             ;
 
-SENTENCESLIST :   SENTENCESLIST SENTENCE    { $$ = APIinstructions.newSentenceList($1, $2); }
-                | SENTENCE  { $$ = APIinstructions.newSentenceList(undefined, $1); }
-            ;
-
-SENTENCE :    DECLARATIONSENTENCE   { $$ = $1; }
-            | ASSIGNMENTORCALLSENTENCE  { $$ = $1; }
-            | PRINTSENTENCE { $$ = $1; }
-            | IFELSESENTENCE    { $$ = $1; }
-            | SWITCHSENTENCE    { $$ = $1; }
-            | FORSENTENCE   { $$ = $1; }
-            | WHILESENTENCE { $$ = $1; }
-            | DOWHILESENTENCE   { $$ = $1; }
-            | CONTINUESENTENCE  { $$ = $1; }
-            | BREAKSENTENCE { $$ = $1; }
-            | RETURNSENTENCE    { $$ = $1; }
-            ;
+SENTENCESLIST :   DECLARATIONSENTENCE SENTENCESLIST     { $$ = APIinstructions.newSententenceList($2, $1); }
+                | ASSIGNMENTORCALLSENTENCE SENTENCESLIST    { $$ = APIinstructions.newSententenceList($2, $1); }
+                | PRINTSENTENCE SENTENCESLIST   { $$ = APIinstructions.newSententenceList($2, $1); }
+                | IFELSESENTENCE SENTENCESLIST  { $$ = APIinstructions.newSententenceList($2, $1); }
+                | SWITCHSENTENCE SENTENCESLIST  { $$ = APIinstructions.newSententenceList($2, $1); }
+                | FORSENTENCE SENTENCESLIST { $$ = APIinstructions.newSententenceList($2, $1); }
+                | WHILESENTENCE SENTENCESLIST   { $$ = APIinstructions.newSententenceList($2, $1); }
+                | DOWHILESENTENCE SENTENCESLIST { $$ = APIinstructions.newSententenceList($2, $1); }
+                | CONTINUESENTENCE SENTENCESLIST    { $$ = APIinstructions.newSententenceList($2, $1); }
+                | BREAKSENTENCE SENTENCESLIST   { $$ = APIinstructions.newSententenceList($2, $1); }
+                | RETURNSENTENCE SENTENCESLIST  { $$ = APIinstructions.newSententenceList($2, $1); }
+                | { $$ = undefined; }
+                ;
 
 CONTINUESENTENCE : continue SEMICOLON   { $$ = APIinstructions.newContinue(); }
             ;
