@@ -23,11 +23,38 @@ app.get('/', function(req, res){
     res.json({Msg: "Hola mundo desde mensaje"});
 });
 
-app.post('/parse', (req, res, next) => {
-    var txt = req.body.main;
-    var result = parser(txt);
+let CopyClasses = new Array();
+let CopyMethods = new Array();
+let CopyVariables = new Array();
 
-    res.send({AST: result.AST, LE: result.LEXICAL_ERRORS, SE: result.SINTACTICAL_ERRORS});
+app.post('/parse', (req, res, next) => {
+    var txtMain = req.body.main;    
+    var txtCopy = req.body.copy;
+
+    var resultMain = parser(txtMain);
+    var resultCopy = parser(txtCopy);
+
+    compareAll(resultMain.AST.LISTA_CLASES, resultCopy.AST.LISTA_CLASES);
+
+    res.send(
+        {
+            Main: {
+                AST: resultMain.AST,
+                LE: resultMain.LEXICAL_ERRORS, 
+                SE: resultMain.SINTACTICAL_ERRORS
+            },
+            Copy: {
+                AST: resultCopy.AST,
+                LE: resultCopy.LEXICAL_ERRORS, 
+                SE: resultCopy.SINTACTICAL_ERRORS
+            },
+            Reports: {
+                ClassReport: CopyClasses,
+                MethodsReport: CopyMethods,
+                VariablesReport: CopyVariables
+            }
+        }
+    );
 });
 
 function parser(txt){
@@ -36,4 +63,21 @@ function parser(txt){
     } catch (error) {
         return "Error en compilacion de Entrada " + error.toString();
     }
+}
+
+function compareAll(main, copy){
+    console.log("Comparando todo");
+    let claseMain = main;
+}
+
+function compareClasses(mainClass, copyClass){
+    console.log("Comparando clases");
+}
+
+function compareMethods(mainMethod, copyMethod){
+    console.log("Comparando metodos y funciones");
+}
+
+function compareVariables(mainVariable, copyVariable){
+    console.log("Comparando variables");
 }

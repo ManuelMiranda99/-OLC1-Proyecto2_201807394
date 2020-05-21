@@ -69,75 +69,49 @@ function openMainFile(files){
 
 let ASTMAIN, ASTCOPY;
 let MainLexicalErrors, MainSintacticalErrors, CopyLexicalErrors, CopySintacticalErrors;
+let Reports;
 function compareCode(){    
 
     document.getElementById("ReportsButton").disabled = false;
-
+    var Texts;
     // Parse Files
-    URL = 'http://localhost:3000/parse';
-    var mainText = {
-        main: mainEditor.getValue()
-    };
+    URL = 'http://localhost:3000/parse';    
     if(copyEditorList.length == 0){
-        /* ASSIGN MAIN AST */
-        fetch(URL, {
-            method: "POST",
-            body: JSON.stringify(mainText),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json())
-        .catch(error => console.error("Error: ", error))
-        .then(response => {
-            console.log("Exito");
-            ASTMAIN = response.AST;
-            MainLexicalErrors = response.LE;
-            MainSintacticalErrors = response.SE;
-        })
-        
+        Texts = {
+            main: mainEditor.getValue(),
+            copy: ""
+        };        
         alert("No hay con que comparar el código principal :(. Solo se realizará análisis del código Main");
     }else{        
-        var compareText = {
-            main: actualEditor.getValue()
+        Texts = {
+            main: mainEditor.getValue(),
+            copy: actualEditor.getValue()
         };
-        
-        /* ASSIGN MAIN AST */
-        fetch(URL, {
-            method: "POST",
-            body: JSON.stringify(mainText),
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then(res => res.json())
-        .catch(error => console.error("Error: ", error))
-        .then(response => {
-            console.log("Exito");
-            ASTMAIN = response.AST;
-            MainLexicalErrors = response.LE;
-            MainSintacticalErrors = response.SE;
-        })        
-        
-        /* ASSIGN COPY AST */
-            fetch(URL, {
-                method: "POST",
-                body: JSON.stringify(compareText),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(res => res.json())
-            .catch(error => console.error("Error: ", error))
-            .then(response => {
-                console.log("Exito");
-                ASTCOPY = response.AST;
-                CopyLexicalErrors = response.LE;
-                CopySintacticalErrors = response.SE;
-            })        
     }
+
+    fetch(URL, {
+        method: "POST",
+        body: JSON.stringify(Texts),
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    }).then(res => res.json())
+    .catch(error => console.error("Error: ", error))
+    .then(response => {
+        console.log("Exito");
+        ASTMAIN = response.Main.AST;
+        MainLexicalErrors = response.Main.LE;
+        MainSintacticalErrors = response.Main.SE;
+        ASTCOPY = response.Copy.AST;
+        CopyLexicalErrors = response.Copy.LE;
+        CopySintacticalErrors = response.Copy.SE;
+        Reports = response.Reports;
+    })
 }
 
 function PassAST(){
     window.location.href = "http://localhost:8000/reports"
-    localStorage.setItem("AST", JSON.stringify(ASTMAIN, null, ' '));
+    localStorage.setItem("AST", JSON.stringify(ASTMAIN, null, ' '));    
 }
 
 function GetAST(){
