@@ -26,7 +26,7 @@ app.get('/', function(req, res){
 let CopyClasses = new Array();
 let CopyMethods = new Array();
 let CopyVariables = new Array();
-
+let AuxiliarIDs = new Array();                  // Check if the method isnt already in compare classes or compare methods/fun
 app.post('/parse', (req, res, next) => {
     var txtMain = req.body.main;    
     var txtCopy = req.body.copy;
@@ -67,17 +67,52 @@ function parser(txt){
 
 function compareAll(main, copy){
     console.log("Comparando todo");
-    let claseMain = main;
+    let actual = main;
+    let mainClass = actual.CLASE;
+    while(actual.CLASES != undefined){
+
+
+        let actualCopy = copy;
+        let copyClass = actualCopy.CLASE;
+        while(actualCopy.CLASES != undefined){
+
+
+            actualCopy = actualCopy.CLASES;
+            copyClass = actualCopy.CLASE;
+        }
+
+        actual = actual.CLASES;
+        mainClass = actual.CLASE;
+    }
 }
 
-function compareClasses(mainClass, copyClass){
-    console.log("Comparando clases");
+function PushClass(_class, _count){
+    CopyClasses.push(
+        {
+            NOMBRE: _class.ID,
+            NUMERO_FUN_MET: _count
+        }
+    );
 }
 
-function compareMethods(mainMethod, copyMethod){
-    console.log("Comparando metodos y funciones");
+function compareMethods(method, _class){
+    CopyMethods.push(
+        {
+            TIPO: method.TIPO,
+            NOMBRE: method.ID,
+            PARAMETROS: method.PARAMETROS,
+            CLASE: _class
+        }
+    );
 }
 
-function compareVariables(mainVariable, copyVariable){
-    console.log("Comparando variables");
+function compareVariables(type, variable, method, _class){
+    CopyVariables.push(
+        {
+            TIPO: type,
+            NOMBRE: variable.ID,
+            FUN_MET: method,
+            CLASE: _class
+        }
+    );
 }

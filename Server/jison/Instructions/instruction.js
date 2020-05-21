@@ -137,7 +137,8 @@ const APIinstructions = {
 
     newMethod: function(id, params, instructions){
         return{
-            TIPO: 'void',            
+            TIPO_SENTENCIA: INSTRUCTIONS.METHOD,
+            TIPO: 'void',
             ID: id,
             O_P: '(',
             PARAMETROS: params,
@@ -150,6 +151,7 @@ const APIinstructions = {
 
     newFunction: function(type, id, params, instructions){
         return{            
+            TIPO_SENTENCIA: INSTRUCTIONS.FUNCTION,
             TIPO: type,
             ID: id,
             O_P: '(',
@@ -198,6 +200,7 @@ const APIinstructions = {
 
     newDeclaration: function(type, ids){
         return{
+            TIPO_SENTENCIA: INSTRUCTIONS.DECLARATION,
             TIPO_DATO: type,
             IDS: ids,
             PC: ';'
@@ -206,6 +209,7 @@ const APIinstructions = {
 
     newDecAs: function(type, ids, exp){
         return{            
+            TIPO_SENTENCIA: INSTRUCTIONS.DECLARATION,
             TIPO_DATO: type,
             IDS: ids,
             I: '=',
