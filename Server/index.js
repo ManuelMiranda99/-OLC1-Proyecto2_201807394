@@ -26,7 +26,6 @@ app.get('/', function(req, res){
 let CopyClasses = new Array();
 let CopyMethods = new Array();
 let CopyVariables = new Array();
-let AuxiliarIDs = new Array();                  // Check if the method isnt already in compare classes or compare methods/fun
 app.post('/parse', (req, res, next) => {
     var txtMain = req.body.main;    
     var txtCopy = req.body.copy;
@@ -34,7 +33,7 @@ app.post('/parse', (req, res, next) => {
     var resultMain = parser(txtMain);
     var resultCopy = parser(txtCopy);
 
-    compareAll(resultMain.AST.LISTA_CLASES, resultCopy.AST.LISTA_CLASES);
+    compareClasses(resultMain.AST.LISTA_CLASES, resultCopy.AST.LISTA_CLASES);
 
     res.send(
         {
@@ -65,25 +64,119 @@ function parser(txt){
     }
 }
 
-function compareAll(main, copy){
-    console.log("Comparando todo");
-    let actual = main;
-    let mainClass = actual.CLASE;
-    while(actual.CLASES != undefined){
+function compareClasses(main, _copy){
+    /* DECLARATION OF VARIABLES */
+    let actual, Mclass, copy, Cclass, AuxiliarIDs, auxMI, auxCI, Mmethod, Cmethod, COUNT=0;
+    console.log("Comparando clases...");
 
+    /* Start variables to loop through the main classes */
+    actual = main;
+    if(actual != undefined){
+        Mclass = main.CLASE;
+    }
+    /* Traveling through each main class */
+    while(actual != undefined){
+        
+        /* Start variables to loop through the copy classes */
+        copy = _copy;
+        if(copy != undefined){
+            Cclass = copy.CLASE;
+        }
+        /* Traveling through each copy class */
+        while(copy != undefined){
+            if(Mclass.ID === Cclass.ID){
+                if(CountMethodsAndFunctions(Mclass.INSTRUCCIONES) === CountMethodsAndFunctions(Cclass.INSTRUCCIONES)){
+                    AuxiliarIDs = new Array();                  // Check if the method isnt already in compare classes or compare methods/fun
+                    // Compare Classes Methods
+                    console.log("Misma cantidad de metodos/funciones");
+                    
+                    COUNT = 0;
+                    auxMI = Mclass.INSTRUCCIONES;
+                    if(auxMI != undefined){
+                        Mmethod = auxMI.SENTENCIA;
+                    }                    
+                    while(auxMI != undefined){
 
-        let actualCopy = copy;
-        let copyClass = actualCopy.CLASE;
-        while(actualCopy.CLASES != undefined){
+                        if(IsFunOrMet(Mmethod)){
 
+                            auxCI = Cclass.INSTRUCCIONES;
+                            if(auxCI != undefined){
+                                Cmethod = auxCI.SENTENCIA;
+                            }
 
-            actualCopy = actualCopy.CLASES;
-            copyClass = actualCopy.CLASE;
+                            while(auxCI != undefined){
+
+                                if(IsFunOrMet(Cmethod)){
+                                    // Compare types and ID
+                                    if(Cmethod.ID === Mmethod.ID && Cmethod.TIPO === Mmethod.TIPO && !AuxiliarIDs.includes(Mmethod.ID)){                                        
+                                        COUNT++;
+                                        AuxiliarIDs.push(Cmethod.ID);                                        
+                                        // Copy method
+                                        break;
+                                    }
+                                }
+
+                                auxCI = auxCI.SENTENCIAS;
+                                if(auxCI != undefined){
+                                    Cmethod = auxCI.SENTENCIA;
+                                }
+                            }
+
+                        }                        
+
+                        auxMI = auxMI.SENTENCIAS;
+                        if(auxMI != undefined){
+                            Mmethod = auxMI.SENTENCIA;
+                        }
+
+                    }                    
+                    if(COUNT === CountMethodsAndFunctions(Mclass.INSTRUCCIONES)){
+                        PushClass(Mclass, COUNT);
+                    }
+                }
+            }
+            copy = copy.CLASES;
+            if(copy != undefined){
+                Cclass = copy.CLASE;
+            }
         }
 
         actual = actual.CLASES;
-        mainClass = actual.CLASE;
+        if(actual != undefined){
+            Mclass = actual.CLASE;
+        }
     }
+}
+
+function compareMethods(main, _copy, classID){
+
+}
+
+function compareVariables(main, _copy, classID, methodID){
+
+}
+
+function CountMethodsAndFunctions(Minstructions){
+    if(Minstructions == undefined){
+        return 0;
+    }
+    let actual = Minstructions, method = Minstructions.SENTENCIA;    
+    let count = 0;
+    while(actual != undefined){
+        if(IsFunOrMet(method))
+            count++;
+        actual = actual.SENTENCIAS;
+        if(actual != undefined)
+            method = actual.SENTENCIA;
+    }
+    return count;
+}
+
+function IsFunOrMet(sentence){
+    if(sentence.TIPO_SENTENCIA === "METHOD" || sentence.TIPO_SENTENCIA === "FUNCTION"){
+        return true;
+    }
+    return false;
 }
 
 function PushClass(_class, _count){
@@ -95,7 +188,7 @@ function PushClass(_class, _count){
     );
 }
 
-function compareMethods(method, _class){
+function PushMethod(method, _class){
     CopyMethods.push(
         {
             TIPO: method.TIPO,
@@ -106,7 +199,7 @@ function compareMethods(method, _class){
     );
 }
 
-function compareVariables(type, variable, method, _class){
+function PushVariable(type, variable, method, _class){
     CopyVariables.push(
         {
             TIPO: type,
