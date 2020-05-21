@@ -111,7 +111,7 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 /* ID */
 {id}                    return 'id'
 <<EOF>>                 return 'EOF'
-.                       { LexicalErrors.push({ ERROR: "Caracter invalido: " + yytext, LINE: yylloc.first_line, COLUMN : yylloc.first_column }); }
+.                       { LexicalErrors.push({ ERROR: "Caracter invalido no perteneciente al lenguaje: " + yytext, LINE: yylloc.first_line, COLUMN : yylloc.first_column }); }
 
 /lex
 
@@ -120,7 +120,7 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
     const TYPES                     = require("./Instructions/instruction").TYPES;
     const APIinstructions           = require("./Instructions/instruction").APIinstructions;
     const LexicalErrors             = new Array();
-    const SintacticalErrors         = new Array();
+    const SyntacticalErrors         = new Array();
 %}
 
 /* PRECEDENCE */
@@ -141,10 +141,10 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 %%
 
 
-START :   IMPORTLIST CLASSLIST EOF      { return { AST: APIinstructions.root($1, $2), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined}; }
-        | IMPORTLIST EOF                { return { AST: APIinstructions.root($1, undefined), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined}; }
-        | CLASSLIST EOF                 { return { AST: APIinstructions.root(undefined, $1), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined}; }
-        | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: undefined }; }
+START :   IMPORTLIST CLASSLIST EOF      { return { AST: APIinstructions.root($1, $2), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
+        | IMPORTLIST EOF                { return { AST: APIinstructions.root($1, undefined), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
+        | CLASSLIST EOF                 { return { AST: APIinstructions.root(undefined, $1), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
+        | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: undefined, SINTACTICAL_ERRORS: undefined }; }
             ;
 
 IMPORTLIST :  FINALIMPORT IMPORTLIST { $$ = APIinstructions.newImportList($2, $1); }
@@ -152,6 +152,17 @@ IMPORTLIST :  FINALIMPORT IMPORTLIST { $$ = APIinstructions.newImportList($2, $1
             ;
 
 FINALIMPORT:  import id SEMICOLON   { $$ = APIinstructions.newImport($2); }
+            | import ERRORSENTENCE SEMICOLON 
+            { 
+                SyntacticalErrors.push(
+                    { 
+                        ERROR: "Se esperaba ID, se encontro '" + $2 + "'", 
+                        LINE: this._$.first_line, 
+                        COLUMN: this._$.first_column 
+                    }
+                );
+                $$ = undefined;
+            }
             ;
 
 CLASSLIST :   FINALCLASS CLASSLIST  { $$ = APIinstructions.newClassList($2, $1); }
@@ -160,6 +171,7 @@ CLASSLIST :   FINALCLASS CLASSLIST  { $$ = APIinstructions.newClassList($2, $1);
             
 FINALCLASS:   class id S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { $$ = APIinstructions.newClass($2, $4); }
             | class id S_OPEN_KEY S_CLOSE_KEY   { $$ = APIinstructions.newClass($2, undefined); }
+            | class ERRORSENTENCE S_OPEN_KEY S_CLOSE_KEY {  }
             ;
 
 INSIDECLASS :     FINALINSIDECLASS INSIDECLASS  { $$ = APIinstructions.newListInsideClass($2, $1); }
@@ -181,6 +193,7 @@ TYPE : WR_INT { $$ = $1; } | WR_DOUBLE { $$ = $1; } | WR_CHAR { $$ = $1; } | WR_
 
 PARAMETERDECLARATION :    PARAMETER S_COMMA PARAMETERDECLARATION    { $$ = APIinstructions.newParamsList($3, $1); }
                         | PARAMETER { $$ = APIinstructions.newParamsList(undefined, $1); }
+                        //| error { SyntacticalErrors.push({ ERROR: "Se esperaba declaracion o metodo, se encontro " + yytext, LINE: this._$.first_line, COLUMN: this._$.first_column }); }
             ;
 
 PARAMETER : TYPE id { $$ = APIinstructions.newParam($1, $2); }
@@ -295,4 +308,10 @@ EXPRESSION :  S_MINUS EXPRESSION %prec UMINUS   { $$ = APIinstructions.newUnaryO
 
 EXPRESSIONLIST :  EXPRESSION S_COMMA EXPRESSIONLIST { $$ = APIinstructions.newListExpression($3, $1); }
                 | EXPRESSION    { $$ = APIinstructions.newListExpression(undefined, $1); }
+            ;
+
+ERRORSENTENCE :   ERRORSENTENCE FINALERROR  { $$ = $1 + " " + $2; }
+                | FINALERROR    { $$ = $1; }
+            ;
+FINALERROR : error
             ;
