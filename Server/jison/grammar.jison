@@ -144,7 +144,27 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 START :   IMPORTLIST CLASSLIST EOF      { return { AST: APIinstructions.root($1, $2), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
         | IMPORTLIST EOF                { return { AST: APIinstructions.root($1, undefined), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
         | CLASSLIST EOF                 { return { AST: APIinstructions.root(undefined, $1), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
-        | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: undefined, SINTACTICAL_ERRORS: undefined }; }
+        | ERRORSENTENCE SEMICOLON START {
+            SyntacticalErrors.push(
+                {
+                    ERROR: "Se esperaba import o clase, se encontro '" + $1 + "'", 
+                    LINE: this._$.first_line, 
+                    COLUMN: this._$.first_column 
+                }
+            );
+            $$ = undefined;
+        }
+        | ERRORSENTENCE S_OPEN_KEY ERRORSENTENCE S_CLOSE_KEY START     {
+            SyntacticalErrors.push(
+                {
+                    ERROR: "Se esperaba import o clase, se encontro '" + $1 + "'", 
+                    LINE: this._$.first_line, 
+                    COLUMN: this._$.first_column 
+                }
+            );
+            $$ = undefined;
+        }
+        | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: undefined, SINTACTICAL_ERRORS: undefined }; }        
             ;
 
 IMPORTLIST :  FINALIMPORT IMPORTLIST { $$ = APIinstructions.newImportList($2, $1); }
@@ -171,7 +191,26 @@ CLASSLIST :   FINALCLASS CLASSLIST  { $$ = APIinstructions.newClassList($2, $1);
             
 FINALCLASS:   class id S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { $$ = APIinstructions.newClass($2, $4); }
             | class id S_OPEN_KEY S_CLOSE_KEY   { $$ = APIinstructions.newClass($2, undefined); }
-            | class ERRORSENTENCE S_OPEN_KEY S_CLOSE_KEY {  }
+            | class ERRORSENTENCE S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { 
+                SyntacticalErrors.push(
+                    {
+                        ERROR: "Se esperaba ID, se encontro '" + $2 + "'",
+                        LINE: this._$.first_line,
+                        COLUMN: this._$.first_column
+                    }
+                );
+                $$ = undefined;
+             }
+            | class S_OPEN_KEY INSIDECLASS S_CLOSE_KEY {
+                SyntacticalErrors.push(
+                    {
+                        ERROR: "Se esperaba ID, se encontro nada",
+                        LINE: this._$.first_line,
+                        COLUMN: this._$.first_column
+                    }
+                );
+                $$ = undefined;
+            }            
             ;
 
 INSIDECLASS :     FINALINSIDECLASS INSIDECLASS  { $$ = APIinstructions.newListInsideClass($2, $1); }
@@ -179,6 +218,26 @@ INSIDECLASS :     FINALINSIDECLASS INSIDECLASS  { $$ = APIinstructions.newListIn
             ;
 FINALINSIDECLASS :    DECLARATIONSENTENCE { $$ = $1; }
                     | METHODSFUN   { $$ = $1; }
+                    | ERRORSENTENCE SEMICOLON {
+                        SyntacticalErrors.push(
+                            {
+                                ERROR: "Se esperaba declaracion o metodo, se encontro '" + $1 + "'",
+                                LINE: this._$.first_line,
+                                COLUMN: this._$.first_column
+                            }
+                        );
+                        $$ = undefined;
+                    }
+                    | ERRORSENTENCE S_OPEN_KEY ERRORSENTENCE S_CLOSE_KEY    {
+                        SyntacticalErrors.push(
+                            {
+                                ERROR: "Se esperaba declaracion o metodo, se encontro '" + $1 + "'",
+                                LINE: this._$.first_line,
+                                COLUMN: this._$.first_column
+                            }
+                        );
+                        $$ = undefined;
+                    }
             ;
 
 METHODSFUN :  TYPE id S_OPEN_PARENTHESIS PARAMETERDECLARATION S_CLOSE_PARENTHESIS S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY { $$ = APIinstructions.newFunction($1, $2, $4, $7); }
