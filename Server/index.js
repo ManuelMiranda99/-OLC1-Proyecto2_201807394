@@ -115,6 +115,7 @@ function compareClasses(main, _copy){
                                         COUNT++;
                                         AuxiliarIDs.push(Cmethod.ID);                                        
                                         // Copy method
+                                        compareMethods(Mmethod, Cmethod, Mclass.ID);
                                         break;
                                     }
                                 }
@@ -152,7 +153,34 @@ function compareClasses(main, _copy){
 }
 
 function compareMethods(main, _copy, classID){
+    // Only compare paramethers
+    let actual, Mparameter, copy, Cparameter, COUNT, auxP = "";
+    if(CountParameters(main) === CountParameters(_copy)){
+        COUNT = 0;
+        actual= main.PARAMETROS;
+        copy = _copy.PARAMETROS;
+        while(actual != undefined){
+            Mparameter = actual.PARAMETRO;
+            Cparameter = copy.PARAMETRO;
+            if(Mparameter.TIPO_DATO === Cparameter.TIPO_DATO){
+                auxP += "Tipo: " + Mparameter.TIPO_DATO + " / Nombre Original: '" + Mparameter.ID + "' / Nombre Copia: '" + Cparameter.ID + "' - ";
+                COUNT++;
+                actual = actual.PARAMETROS;
+                copy = copy.PARAMETROS;
+            }else{
+                return;
+            }
+        }
+        if(COUNT === CountParameters(main)){
+            PushMethod(main, classID, auxP);
 
+            // Compare copy variables
+
+        }
+    }else{
+        // Non copy method
+    }
+    
 }
 
 function compareVariables(main, _copy, classID, methodID){
@@ -175,6 +203,16 @@ function CountMethodsAndFunctions(Minstructions){
     return count;
 }
 
+function CountParameters(Mparameters){
+    let actual = Mparameters.PARAMETROS, param, count=-1;
+    while(actual != undefined){
+        count++;
+        actual = actual.PARAMETROS;
+    }
+    count++;
+    return count;
+}
+
 function IsFunOrMet(sentence){
     if(sentence.TIPO_SENTENCIA === "METHOD" || sentence.TIPO_SENTENCIA === "FUNCTION"){
         return true;
@@ -191,12 +229,12 @@ function PushClass(_class, _count){
     );
 }
 
-function PushMethod(method, _class){
+function PushMethod(method, _class, params){
     CopyMethods.push(
         {
             TIPO: method.TIPO,
             NOMBRE: method.ID,
-            PARAMETROS: method.PARAMETROS,
+            PARAMETROS: params,
             CLASE: _class
         }
     );
