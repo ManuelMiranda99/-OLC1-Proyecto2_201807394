@@ -71,11 +71,11 @@ let ASTMAIN, ASTCOPY;
 let MainLexicalErrors, MainSintacticalErrors, CopyLexicalErrors, CopySintacticalErrors;
 let Reports;
 function compareCode(){    
-
+    document.getElementById("copias").disabled = false;
     document.getElementById("ReportsButton").disabled = false;
     var Texts;
     // Parse Files
-    URL = 'http://localhost:3000/parse';    
+    let URLT = 'http://localhost:3000/parse';    
     if(copyEditorList.length == 0){
         Texts = {
             main: mainEditor.getValue(),
@@ -89,7 +89,7 @@ function compareCode(){
         };
     }
 
-    fetch(URL, {
+    fetch(URLT, {
         method: "POST",
         body: JSON.stringify(Texts),
         headers: {
@@ -109,18 +109,66 @@ function compareCode(){
     })
 }
 
+let txtClasses = "VACIO", txtMethods = "VACIO", txtVariables = "VACIO";
+function ShowCopy(){
+    let classes = Reports.ClassReport;
+    let methods = Reports.MethodsReport;
+    let variables = Reports.VariablesReport;
+    
+    let txt;
+    txtClasses = "//////////  CLASES COPIA ENCONTRADAS  //////////\n";
+    
+    for(let i=0; i < classes.length; i++){
+        if(i == 0){
+            txt = "//////////  CLASES COPIA ENCONTRADAS  //////////\n";
+        }
+        let aux = classes[i];
+        txt += "Clase copia: " + aux.NOMBRE + " | Cantidad de métodos/funciones: " + aux.NUMERO_FUN_MET + " \n";
+        txtClasses += "Clase copia: " + aux.NOMBRE + " | Cantidad de métodos/funciones: " + aux.NUMERO_FUN_MET + " \n";
+    }
+
+    txtMethods = "//////////  Metodos/Funciones COPIA ENCONTRADAS  //////////\n";
+    for(let i=0; i < methods.length; i++){
+        if(i == 0){
+            txt += "\n//////////  Metodos/Funciones COPIA ENCONTRADAS  //////////\n";
+        }
+        let aux = methods[i];
+        txt += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | PARAMETROS: " + aux.PARAMETROS + " | CLASE: " + aux.CLASE + "\n";
+        txtMethods += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | PARAMETROS: " + aux.PARAMETROS + " | CLASE: " + aux.CLASE + "\n";
+    }
+
+    txtVariables = "//////////  Variables COPIA ENCONTRADAS  //////////\n";
+    for(let i=0; i < variables.length; i++){
+        if(i==0){
+            txt += "\n//////////  Variables COPIA ENCONTRADAS  //////////\n";
+        }
+        let aux = variables[i];
+        txt += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | Funcion/Metodo: " + aux.fun + " | Clase: " + aux.CLASE + "\n";
+        txtVariables += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | Funcion/Metodo: " + aux.fun + " | Clase: " + aux.CLASE + "\n";
+    }
+
+    exitEditor.setValue(txt);
+}
+
 function PassAST(){
     window.location.href = "http://localhost:8000/reports"
-    localStorage.setItem("AST", JSON.stringify(ASTMAIN, null, ' '));    
+    localStorage.setItem("AST", JSON.stringify(ASTMAIN, null, ' '));
+    localStorage.setItem("CLASSES", txtClasses);
+    localStorage.setItem("METHODS", txtMethods);
+    localStorage.setItem("VARIABLES", txtVariables);
 }
 
 function GetAST(){
     ASTMAIN = localStorage.getItem("AST");
+    txtClasses = localStorage.getItem("CLASSES");
+    txtMethods = localStorage.getItem("METHODS");
+    txtVariables = localStorage.getItem("VARIABLES");
     if(ASTMAIN === "undefined"){
         jsonEditor.setValue("No ha cargado ningun archivo para generar el AST :c");
     }else{
-    jsonEditor.setValue(ASTMAIN); 
+        jsonEditor.setValue(ASTMAIN); 
     }
+
 }    
 
     
@@ -148,15 +196,15 @@ function DownloadErrors(){
 }
 
 function DownloadClasses(){
-
+    saveFile(txtClasses, "ClasesCopia.txt");
 }
 
 function DownloadFunctions(){
-
+    saveFile(txtMethods, "FuncionesCopia.txt");
 }
 
 function DownloadVariables(){
-
+    saveFile(txtVariables, "VariablesCopia.txt");
 }
 
 function DownloadAST(){    

@@ -23,9 +23,9 @@ app.get('/', function(req, res){
     res.json({Msg: "Hola mundo desde mensaje"});
 });
 
-let CopyClasses = new Array();
-let CopyMethods = new Array();
-let CopyVariables = new Array();
+let CopyClasses;
+let CopyMethods;
+let CopyVariables;
 app.post('/parse', (req, res, next) => {
     var txtMain = req.body.main;    
     var txtCopy = req.body.copy;
@@ -65,6 +65,9 @@ function parser(txt){
 }
 
 function compareClasses(main, _copy){
+    CopyClasses = new Array();
+    CopyMethods = new Array();
+    CopyVariables = new Array();
     /* DECLARATION OF VARIABLES */
     let actual, Mclass, copy, Cclass, AuxiliarIDs, auxMI, auxCI, Mmethod, Cmethod, COUNT=0;
     console.log("Comparando clases...");
