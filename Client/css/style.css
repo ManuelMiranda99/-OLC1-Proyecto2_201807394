@@ -1,25 +1,24 @@
-/*body{
-    overflow: hidden;
-}*/
-
-input[type="file"]#mi-file {
-    width: 0.1px;
-    height: 0.1px;
-    opacity: 0;
-    overflow: hidden;
-    position: absolute;
-    z-index: -1;
+body{
+    background-color: grey;
 }
 
+input[type="file"]#mi-file {
+    width: 96px;
+    height: 50px;
+    opacity: 1;
+    overflow: hidden;
+    position: absolute;
+    
+}
+/*
 label[for="mi-file"]{
     color: black;
-    background-color: white;
     display: inline-block;
     transition: all .5s;
     cursor: pointer;
     width: fit-content;
 }
-
+*/
 .dropdown-menu{
     background-color: grey;
 }
@@ -42,10 +41,21 @@ label[for="mi-file"]{
     height: 330px;
 }
 
+.jsonEditor{
+    position: relative;
+    height: 630px;
+    width: 100%;
+}
+
+.CopyEditor{
+    position: relative;
+    height: 250px;
+}
+
 .exitEditor{
     margin-top: 10px;
     position: relative;
-    height: 220px;
+    height: 215px;
 }
 
 .content{
@@ -65,4 +75,23 @@ label[for="mi-file"]{
 
 .card{
     height: 100%;
+}
+
+.openFile{
+    color: black;
+}
+
+.copyTabDefault{
+    color: black;
+    background-color:#ffc107;
+}
+
+.copyTabDefault .active{
+    color: white;
+    background-color: #FFD455;
+}
+
+.copyTabDefault:hover{
+    color: white;
+    background-color: #FFD455;
 }

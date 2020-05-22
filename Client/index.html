@@ -6,6 +6,7 @@
         <script src="js/ace.js"></script>
         <script src="js/mode-java.js"></script>
         <script src="js/theme-twilight.js"></script>
+        <script src="js/index.js"></script>
 
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="css/style.css">
@@ -21,29 +22,15 @@
 
             <ul class="nav justify-content-end">
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Archivo</a>      
+                    <a class="nav-link dropdown-toggle text-white" data-toggle="dropdown" href="" role="button" aria-haspopup="true" aria-expanded="false">Archivo</a>
 
-                    <div class="dropdown-menu">
-                        
-                        <span><input type="file" name="mi-file" id="mi-file" accept=".cs"></span>
-                        <label for="mi-file"><a href="" class="dropdown-item">Abrir</a></label>
-                        
-                        <a href="#" class="dropdown-item">Guardar</a>
+                    <div class="dropdown-menu">                                                                    
+                        <a class="dropdown-item" onclick="Save()">Guardar</a>
 
-                        <a href="#" class="dropdown-item">Guardar Como</a>
+                        <a class="dropdown-item" onclick="SaveAs()">Guardar Como</a>
                     </div>
 
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="" aria-haspopup="true">
-                        Nuevo
-                    </a>
-                </li>   
-                <li class="nav-item">
-                    <a class="nav-link text-white" href="" aria-haspopup="true">
-                        Descargar Errores
-                    </a>
-                </li>                
+                </li>             
             </ul>
         </nav>
 
@@ -55,7 +42,16 @@
                 <div class="col-sm-12 col-md-12 col-lg-6">
                     <div class="card text-white bg-dark font-weight-bold">
                         <div class="card-header text-center">
-                            Main Code
+                            <div class="row">
+                                <div class="col-lg-8">
+                                    Main Code
+                                </div>
+
+                                <div class="colr-lg-4">
+                                    <label style="margin: 5px;">Abrir</label>
+                                    <span><input type="file" name="mi-file" id="mi-file" accept=".java" onchange="openMainFile(this.files)"></span>
+                                </div>
+                            </div>                            
                         </div>
                         <div class="card-body">
                             <div class="tab-pane fade show active" id="t1">
@@ -66,42 +62,49 @@
                 </div>
                 <!--COMPARISON PROJECTS-->
                 <div class="col-sm-12 col-md-12 col-lg-6">
-                    <div class="card text-white bg-warning font-weight-bold">
+                    <div class="card  bg-warning font-weight-bold">
                         <div class="card-header text-center">
-                            Probar Copia
+                            <div class="row">
+                                <div class="col-lg-6 font-weight-bold" style="font-size: 25px;">
+                                    Probar Copia
+                                </div>
+                                <div class="col-lg-2">
+                                    <button class="btn" onclick="newTab('Tab')" style="font-weight: bold;">Nuevo</button>
+                                </div>
+                                <div class="col-lg-4">
+                                    <label style="margin: 5px;">Abrir</label>
+                                    <span><input type="file" name="mi-file" id="mi-file" accept=".java" onchange="openFile(this.files)"></span>
+                                </div>
+                            </div>                                                    
                         </div>
-                        <div class="card-body">
-                            <!--TODO: TABS-->
-                            <ul class="nav nav-tabs" id="tabsS">
+                        <div class="card-body text-center">
+                            <ul class="nav" id="tabsS">
                                 
                             </ul>
-                            <div id="tabContent" class="tab-content">
-                                <!--
-                                    <div class="tab-pane fade show active" id="tab1">
-                                        <div class="list-group" id="tab1">
-                                    </div>
-                                    <button>Comparar</button>
-                                -->
+                            <div id="tabContent" class="tab-content">                                        
                             </div>
+                            <button class="btn btn-dark" onclick="compareCode()">Comparar</button>
                         </div>
                     </div>                    
                 </div>
             </div>
             <!--REPORTS-->
             <div class="row reports">
-                <div class="col-lg-6 font-weight-bold">
+                <div class="col-lg-4 font-weight-bold" style="color: white;">
                     REPORTES
                 </div>
-                <div class="col-lg-2"></div>
+                <div class="col-lg-4">
+                    <button class="btn btn-dark" onclick="ShowCopy()" id="copias" disabled>Mostrar Reporte Copias General</button>
+                </div>
                 <div class="col-lg-3">
-                    <button type="button" class="btn btn-secondary descarga">Descargar Reportes</button>
+                    <button id="ReportsButton" type="button" class="btn btn-dark descarga" onclick="PassAST()" disabled>Descargar Reportes</button>
                 </div>
             </div>
 
             <!--CONSOLE-->
             <div class="row">
                 <div class="col">
-                    <div class="list-group exitEditor" id="exitEditor"></div>
+                    <div class="list-group exitEditor" id="exitEditor">/* AQUI SE MOSTRARÁ EL REPORTE DE COPIA */</div>
                 </div>
             </div>
         </div>        
