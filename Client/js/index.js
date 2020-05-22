@@ -143,8 +143,8 @@ function ShowCopy(){
             txt += "\n//////////  Variables COPIA ENCONTRADAS  //////////\n";
         }
         let aux = variables[i];
-        txt += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | Funcion/Metodo: " + aux.fun + " | Clase: " + aux.CLASE + "\n";
-        txtVariables += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | Funcion/Metodo: " + aux.fun + " | Clase: " + aux.CLASE + "\n";
+        txt += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | Funcion/Metodo: " + aux.FUN_MET + " | Clase: " + aux.CLASE + "\n";
+        txtVariables += "Tipo: " + aux.TIPO + " | Nombre: " + aux.NOMBRE + " | Funcion/Metodo: " + aux.FUN_MET + " | Clase: " + aux.CLASE + "\n";
     }
 
     exitEditor.setValue(txt);

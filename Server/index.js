@@ -175,7 +175,7 @@ function compareMethods(main, _copy, classID){
             PushMethod(main, classID, auxP);
 
             // Compare copy variables
-
+            compareVariables(main, _copy, classID, main.ID);
         }
     }else{
         // Non copy method
@@ -184,7 +184,39 @@ function compareMethods(main, _copy, classID){
 }
 
 function compareVariables(main, _copy, classID, methodID){
+    let actual, copy, Minst, Cinst;
+    actual = main.INSTRUCCIONES;
+    copy = _copy.INSTRUCCIONES;
+    if(actual === undefined || copy === undefined){
+        return;
+    }    
+    actual = actual.SENTENCIAS;
+    copy = copy.SENTENCIAS;
+    if(actual === undefined || copy === undefined){
+        return;
+    }
+    Minst = actual.SENTENCIA;
+    Cinst = copy.SENTENCIA;
+    while(actual != undefined && copy != undefined){
 
+        if(Minst.TIPO_SENTENCIA === "DECLARATION" && Cinst.TIPO_SENTENCIA === "DECLARATION"){
+
+            if(Minst.TIPO_DATO === Cinst.TIPO_DATO){
+                // Copy variable
+                PushVariable(Minst.TIPO_DATO, Minst.IDS.ID, methodID, classID);
+            }
+
+        }
+
+        actual = actual.SENTENCIAS;
+        copy = copy.SENTENCIAS;
+        if(actual != undefined){
+            Minst = actual.SENTENCIA;
+        }
+        if(copy != undefined){
+            Cinst = copy.SENTENCIA;
+        }
+    }
 }
 
 function CountMethodsAndFunctions(Minstructions){
@@ -244,7 +276,7 @@ function PushVariable(type, variable, method, _class){
     CopyVariables.push(
         {
             TIPO: type,
-            NOMBRE: variable.ID,
+            NOMBRE: variable,
             FUN_MET: method,
             CLASE: _class
         }
