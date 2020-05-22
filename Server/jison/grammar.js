@@ -115,7 +115,7 @@ case 5:
         
 break;
 case 6:
- return { AST: 'Vacio', LEXICAL_ERRORS: undefined, SINTACTICAL_ERRORS: undefined }; 
+ return { AST: 'Vacio', LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors }; 
 break;
 case 7:
  this.$ = APIinstructions.newImportList($$[$0], $$[$0-1]); 

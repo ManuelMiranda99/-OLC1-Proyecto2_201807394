@@ -32,10 +32,11 @@ app.post('/parse', (req, res, next) => {
 
     var resultMain = parser(txtMain);
     var resultCopy = parser(txtCopy);
-
-    if(resultMain.LEXICAL_ERRORS.lenght > 0 || resultCopy.LEXICAL_ERRORS.lenght > 0 || resultCopy.SINTACTICAL_ERRORS.lenght > 0 || resultCopy.SINTACTICAL_ERRORS.lenght > 0|| resultMain.SINTACTICAL_ERRORS.lenght > 0){
-    }else{
-        compareClasses(resultMain.AST.LISTA_CLASES, resultCopy.AST.LISTA_CLASES);
+    if(resultCopy != undefined){        
+        if(resultMain.LEXICAL_ERRORS.length > 0 || resultCopy.LEXICAL_ERRORS.length > 0 || resultCopy.SINTACTICAL_ERRORS.length > 0 || resultCopy.SINTACTICAL_ERRORS.length > 0|| resultMain.SINTACTICAL_ERRORS.length > 0){
+        }else{
+            compareClasses(resultMain.AST.LISTA_CLASES, resultCopy.AST.LISTA_CLASES);
+        }    
     }    
 
     res.send(

@@ -166,7 +166,7 @@ START :   IMPORTLIST CLASSLIST EOF      { return { AST: APIinstructions.root($1,
                 }
             );            
         }
-        | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: undefined, SINTACTICAL_ERRORS: undefined }; }        
+        | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors }; }        
             ;
 
 IMPORTLIST :  FINALIMPORT IMPORTLIST { $$ = APIinstructions.newImportList($2, $1); }
