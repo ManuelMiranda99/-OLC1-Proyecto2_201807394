@@ -5,7 +5,6 @@
 
 integer [0-9]+
 double {integer}("."{integer})?
-/* TODO: ADD ESCAPE SENTENCES \n, \t... */
 stringL (\"[^\"]*\")
 charL (\'[^\']*\')
 id ([a-zA-Z_])[a-zA-Z0-9_]*
@@ -18,8 +17,8 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 [/][*][^*]*[*]+([^/*][^*]*[*]+)*[/] return
 
 /* NATIVE VALUES */
-{integer}               return 'Integer_Number'
 {double}                return 'Double_Number'
+{integer}               return 'Integer_Number'
 {stringL}               return 'String_Literal'
 {charL}                 return 'Char_Literal'
 "true"                  return 'true'
@@ -111,7 +110,7 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
 /* ID */
 {id}                    return 'id'
 <<EOF>>                 return 'EOF'
-.                       { LexicalErrors.push({ ERROR: "Caracter invalido no perteneciente al lenguaje: " + yytext, LINE: yylloc.first_line, COLUMN : yylloc.first_column }); }
+.                       { ARRAYMANAGEMENT.pushAr(LexicalErrors, { ERROR: "Caracter invalido no perteneciente al lenguaje: " + yytext, LINE: yylloc.first_line, COLUMN : yylloc.first_column }); }
 
 /lex
 
@@ -119,8 +118,13 @@ id ([a-zA-Z_])[a-zA-Z0-9_]*
     const OPERATION_TYPE            = require("./Instructions/instruction").OPERATIONS;
     const TYPES                     = require("./Instructions/instruction").TYPES;
     const APIinstructions           = require("./Instructions/instruction").APIinstructions;
-    const LexicalErrors             = new Array();
-    const SyntacticalErrors         = new Array();
+
+    const ARRAYMANAGEMENT             = require("./Instructions/instruction").ARRAYMANAGEMENT;
+
+    ARRAYMANAGEMENT.DeleteArrays();
+
+    let LexicalErrors             = ARRAYMANAGEMENT.getLex();
+    let SyntacticalErrors         = ARRAYMANAGEMENT.getSyn();
 %}
 
 /* PRECEDENCE */
@@ -145,24 +149,22 @@ START :   IMPORTLIST CLASSLIST EOF      { return { AST: APIinstructions.root($1,
         | IMPORTLIST EOF                { return { AST: APIinstructions.root($1, undefined), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
         | CLASSLIST EOF                 { return { AST: APIinstructions.root(undefined, $1), LEXICAL_ERRORS: LexicalErrors, SINTACTICAL_ERRORS: SyntacticalErrors}; }
         | ERRORSENTENCE SEMICOLON START {
-            SyntacticalErrors.push(
+            ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
                 {
                     ERROR: "Se esperaba import o clase, se encontro '" + $1 + "'", 
                     LINE: this._$.first_line, 
                     COLUMN: this._$.first_column 
                 }
-            );
-            $$ = undefined;
+            );            
         }
         | ERRORSENTENCE S_OPEN_KEY ERRORSENTENCE S_CLOSE_KEY START     {
-            SyntacticalErrors.push(
+            ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
                 {
                     ERROR: "Se esperaba import o clase, se encontro '" + $1 + "'", 
                     LINE: this._$.first_line, 
                     COLUMN: this._$.first_column 
                 }
-            );
-            $$ = undefined;
+            );            
         }
         | EOF                           { return { AST: 'Vacio', LEXICAL_ERRORS: undefined, SINTACTICAL_ERRORS: undefined }; }        
             ;
@@ -174,9 +176,9 @@ IMPORTLIST :  FINALIMPORT IMPORTLIST { $$ = APIinstructions.newImportList($2, $1
 FINALIMPORT:  import id SEMICOLON   { $$ = APIinstructions.newImport($2); }
             | import ERRORSENTENCE SEMICOLON 
             { 
-                SyntacticalErrors.push(
+                ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
                     { 
-                        ERROR: "Se esperaba ID, se encontro '" + $2 + "'", 
+                        ERROR: "Se esperaba ID1, se encontro '" + $2 + "'", 
                         LINE: this._$.first_line, 
                         COLUMN: this._$.first_column 
                     }
@@ -192,7 +194,7 @@ CLASSLIST :   FINALCLASS CLASSLIST  { $$ = APIinstructions.newClassList($2, $1);
 FINALCLASS:   class id S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { $$ = APIinstructions.newClass($2, $4); }
             | class id S_OPEN_KEY S_CLOSE_KEY   { $$ = APIinstructions.newClass($2, undefined); }
             | class ERRORSENTENCE S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { 
-                SyntacticalErrors.push(
+                ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
                     {
                         ERROR: "Se esperaba ID, se encontro '" + $2 + "'",
                         LINE: this._$.first_line,
@@ -202,7 +204,7 @@ FINALCLASS:   class id S_OPEN_KEY INSIDECLASS S_CLOSE_KEY { $$ = APIinstructions
                 $$ = undefined;
              }
             | class S_OPEN_KEY INSIDECLASS S_CLOSE_KEY {
-                SyntacticalErrors.push(
+                ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
                     {
                         ERROR: "Se esperaba ID, se encontro nada",
                         LINE: this._$.first_line,
@@ -219,7 +221,7 @@ INSIDECLASS :     FINALINSIDECLASS INSIDECLASS  { $$ = APIinstructions.newListIn
 FINALINSIDECLASS :    DECLARATIONSENTENCE { $$ = $1; }
                     | METHODSFUN   { $$ = $1; }
                     | ERRORSENTENCE SEMICOLON {
-                        SyntacticalErrors.push(
+                        ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
                             {
                                 ERROR: "Se esperaba declaracion o metodo, se encontro '" + $1 + "'",
                                 LINE: this._$.first_line,
@@ -229,7 +231,7 @@ FINALINSIDECLASS :    DECLARATIONSENTENCE { $$ = $1; }
                         $$ = undefined;
                     }
                     | ERRORSENTENCE S_OPEN_KEY ERRORSENTENCE S_CLOSE_KEY    {
-                        SyntacticalErrors.push(
+                        ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
                             {
                                 ERROR: "Se esperaba declaracion o metodo, se encontro '" + $1 + "'",
                                 LINE: this._$.first_line,
@@ -252,7 +254,26 @@ TYPE : WR_INT { $$ = $1; } | WR_DOUBLE { $$ = $1; } | WR_CHAR { $$ = $1; } | WR_
 
 PARAMETERDECLARATION :    PARAMETER S_COMMA PARAMETERDECLARATION    { $$ = APIinstructions.newParamsList($3, $1); }
                         | PARAMETER { $$ = APIinstructions.newParamsList(undefined, $1); }
-                        //| error { SyntacticalErrors.push({ ERROR: "Se esperaba declaracion o metodo, se encontro " + yytext, LINE: this._$.first_line, COLUMN: this._$.first_column }); }
+                        | ERRORSENTENCE S_COMMA PARAMETERDECLARATION {
+                            ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
+                                {
+                                    ERROR: "Se esperaba parametro, se encontro: '" + $1 + "'",
+                                    LINE: this._$.first_line,
+                                    COLUMN: this._$.first_column
+                                }
+                            );
+                            $$ = undefined;
+                        }
+                        | ERRORSENTENCE {
+                            ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
+                                {
+                                    ERROR: "Se esperaba parametros, se encontro: '" + $1 + "'",
+                                    LINE: this._$.first_line,
+                                    COLUMN: this._$.first_column
+                                }
+                            );
+                            $$ = undefined;
+                        }
             ;
 
 PARAMETER : TYPE id { $$ = APIinstructions.newParam($1, $2); }
@@ -270,6 +291,25 @@ SENTENCESLIST :   DECLARATIONSENTENCE SENTENCESLIST     { $$ = APIinstructions.n
                 | BREAKSENTENCE SENTENCESLIST   { $$ = APIinstructions.newSententenceList($2, $1); }
                 | RETURNSENTENCE SENTENCESLIST  { $$ = APIinstructions.newSententenceList($2, $1); }
                 | { $$ = undefined; }
+                | ERRORSENTENCE SEMICOLON SENTENCESLIST {
+                    ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
+                        {
+                            ERROR: "Se esperaba sentencia, se encontro '" + $1 + "'",
+                            LINE: this._$.first_line,
+                            COLUMN: this._$.first_column
+                        }
+                    );
+                    $$ = undefined;
+                }
+                | ERRORSENTENCE S_OPEN_KEY SENTENCESLIST S_CLOSE_KEY SENTENCESLIST  {
+                    ARRAYMANAGEMENT.pushAr( SyntacticalErrors,
+                        {
+                            ERROR: "Se esperaba sentencia, se encontro '" + $1 + "'",
+                            LINE: this._$.first_line,
+                            COLUMN: this._$.first_column
+                        }
+                    )
+                }
                 ;
 
 CONTINUESENTENCE : continue SEMICOLON   { $$ = APIinstructions.newContinue(); }
@@ -357,8 +397,8 @@ EXPRESSION :  S_MINUS EXPRESSION %prec UMINUS   { $$ = APIinstructions.newUnaryO
             | id S_OPEN_PARENTHESIS EXPRESSIONLIST S_CLOSE_PARENTHESIS  { $$ = APIinstructions.newCallFun($1, $3); }
             | id S_OPEN_PARENTHESIS S_CLOSE_PARENTHESIS { $$ = APIinstructions.newCallFun($1, undefined); }
             | id    { $$ = APIinstructions.newValue($1, TYPES.ID); }
-            | Integer_Number    { $$ = APIinstructions.newValue($1, TYPES.INTEGER); }
             | Double_Number { $$ = APIinstructions.newValue($1, TYPES.DOUBLE); }
+            | Integer_Number    { $$ = APIinstructions.newValue($1, TYPES.INTEGER); }            
             | String_Literal    { $$ = APIinstructions.newValue($1, TYPES.STRING); }
             | Char_Literal  { $$ = APIinstructions.newValue($1, TYPES.CHAR); }
             | true  { $$ = APIinstructions.newValue($1, TYPES.BOOLEAN); }

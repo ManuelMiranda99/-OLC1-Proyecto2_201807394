@@ -71,6 +71,24 @@ function newOp(left, right, type){
     };
 }
 
+const ARRAYMANAGEMENT = {
+    SyntacticalErrors: new Array(),
+    LexicalErrors: new Array(),
+    getSyn: function(){
+        return this.SyntacticalErrors;
+    },
+    getLex: function(){
+        return this.LexicalErrors;
+    },
+    DeleteArrays: function(){
+        this.SyntacticalErrors = new Array();
+        this.LexicalErrors = new Array();
+    },
+    pushAr: function(arr, Obj){
+        arr.push(Obj);
+    }
+}
+
 const APIinstructions = {
 
     /* ROOT */
@@ -404,3 +422,4 @@ const APIinstructions = {
 module.exports.OPERATIONS = OPERATIONS;
 module.exports.TYPES = TYPES;
 module.exports.APIinstructions = APIinstructions;
+module.exports.ARRAYMANAGEMENT = ARRAYMANAGEMENT;
